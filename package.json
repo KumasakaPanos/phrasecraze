@@ -1,0 +1,22 @@
+{
+  "name": "phrasecraze",
+  "version": "1.0.0",
+  "description": "",
+  "main": "db.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spinaltaper/phrasecraze.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spinaltaper/phrasecraze/issues"
+  },
+  "homepage": "https://github.com/spinaltaper/phrasecraze#readme"
+}
