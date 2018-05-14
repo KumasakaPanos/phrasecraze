@@ -7,7 +7,6 @@ import scriptRouter from '../routes/script-router';
 
 const router = express.Router();
 
-// app.use(whatever);  <---- add routes here
 const app = express();
 let server = null;
 
