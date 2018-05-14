@@ -5,8 +5,6 @@ import mongoose from 'mongoose';
 import logger from './logger';
 import scriptRouter from '../routes/script-router';
 
-const router = express.Router();
-
 const app = express();
 let server = null;
 
@@ -24,7 +22,7 @@ const startServer = () => {
       return undefined;
     })
     .catch((err) => {
-      logger.log(logger.ERROR, `Something happeded, ${JSON.stringify(err)}`);
+      logger.log(logger.ERROR, `Something happened, ${JSON.stringify(err)}`);
     });
 };
 const stopServer = () => {
@@ -40,4 +38,3 @@ const stopServer = () => {
 };
 
 export { startServer, stopServer };
-

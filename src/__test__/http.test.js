@@ -2,10 +2,10 @@
 
 import faker from 'faker';
 import superagent from 'superagent';
-import script from '../model/script-model';
+import Script from '../model/script-model';
 import { startServer, stopServer } from '../lib/http';
 
-const apiURL = `http://localhost:${process.env.PORT}/api/scripts`;
+const apiURL = `http://localhost:${process.env.PORT}/api/script`;
 
 const createScriptMock = () => {
   return new Script({
@@ -14,10 +14,10 @@ const createScriptMock = () => {
   }).save();
 };
 
-describe('/api/scripts', () => {
+describe('/api/script', () => {
   beforeAll(startServer);
   afterAll(stopServer);
-  afterEach(() => script.remove({}));
+  afterEach(() => Script.remove({}));
   test('POST - It should respond with a 200 status ', () => {
     const scriptToPost = {
       title: faker.lorem.words(10),
