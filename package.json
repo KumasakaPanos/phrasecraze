@@ -7,13 +7,19 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "jest --coverage --forceExit --runInBand",
+    "test": "jest --coverage --forceExit",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
     "dboff": "killall mongod"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/src/__test__/lib/test.env.js"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+
   "devDependencies": {
     "babel-eslint": "^8.2.3",
     "babel-preset-env": "^1.6.1",
@@ -26,6 +32,7 @@
     "superagent": "^3.8.3"
   },
   "dependencies": {
+    "bcrypt": "^2.0.1",
     "body-parser": "^1.18.2",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
@@ -35,5 +42,8 @@
     "queue-fifo": "^0.2.4",
     "stack-lifo": "^0.1.5",
     "winston": "^3.0.0-rc4"
+    "jsonwebtoken": "^8.2.1",
+    "mongoose": "^5.0.17",
+    "winston": "^3.0.0-rc5"
   }
 }
