@@ -35,5 +35,13 @@
     "queue-fifo": "^0.2.4",
     "stack-lifo": "^0.1.5",
     "winston": "^3.0.0-rc4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spinaltaper/phrasecraze.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spinaltaper/phrasecraze/issues"
+  },
+  "homepage": "https://github.com/spinaltaper/phrasecraze#readme"
 }
