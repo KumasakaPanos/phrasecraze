@@ -6,7 +6,7 @@ var MongoClient = mongodb.MongoClient;
 
 // Connection URL. This is where your mongodb server is running.
 
-var url = 'mongodb://pKumasaka:phraseCrazy6@ds01316.mlab.com:1316/food';
+var url = 'mongodb://pKumasaka:phraseCrazy6@ds01316.mlab.com:ds121960/phrasecraze';
 
 // Use connect method to connect to the Server
   MongoClient.connect(url, function (err, db) {
