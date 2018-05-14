@@ -25,7 +25,7 @@ const startServer = () => {
       return undefined;
     })
     .catch((err) => {
-      logger.log(logger.ERROR, `Something happeded, ${JSON.stringify(err)}`);
+      logger.log(logger.ERROR, `Something happened, ${JSON.stringify(err)}`);
     });
 };
 const stopServer = () => {
