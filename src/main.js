@@ -1,6 +1,9 @@
 'use strict';
 
-const server = require('./lib/tcp-server.js');
-const logger = require('./lib/logger');
+import { startServer } from './lib/http';
 
-server.start(process.env.TCP_PORT, () => logger.log(logger.INFO, `Listening on port ${process.env.TCP_PORT}`));
+const serverTCP = require('./lib/tcp-server.js');
+// const serverHTTP = require('./lib/http');
+
+serverTCP.start();
+startServer();

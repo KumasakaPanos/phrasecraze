@@ -5,7 +5,7 @@ const logger = require('./logger');
 const faker = require('faker');
 const superagent = require('superagent');
 
-const path = `:${process.env.HTTP_PORT}`;
+const path = `http://localhost:${process.env.HTTP_PORT}`;
 
 let keys = [];
 const filledKeys = [];
@@ -58,6 +58,7 @@ const parseCommand = (message, user) => {
       if (user.status === 'admin') {
         if (commandVar[0]) {
           script.title = commandVar[0]; //eslint-disable-line
+          console.log(script);
         }
       } else user.socket.write('Only admins can set title-- @title rejected \n');
       break;
@@ -69,16 +70,17 @@ const parseCommand = (message, user) => {
 
         if (commandVar[0]) {
           script.content = commandVar[0]; //eslint-disable-line
+          console.log(script);          
         }
-        
         user.socket.write('You have submitted a script \n');
-        superagent.post(`${path}/script`)
+        return superagent.post(`${path}/script`)
           .send(script)
           .then((res) => {
             if (res.status === 200) {
               user.socket.write('Script submitted successfully \n');
            
               keys = res.body;
+              console.log(keys);
 
               for (let i = 0; i < keys.length; i++) {
                 if (i >= players.length) {
@@ -91,8 +93,10 @@ const parseCommand = (message, user) => {
                 ---> ${player.pKeys.content}`);
               });
             }
-          });
-      } else user.socket.write('Only admits may write scripts-- @write rejected');
+          })
+          .catch(error => new Error(error));
+      }
+      user.socket.write('Only admits may write scripts-- @write rejected');
       break;
     }
 

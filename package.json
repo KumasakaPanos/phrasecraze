@@ -37,6 +37,7 @@
     "faker": "^4.1.0",
     "http-errors": "^1.6.3",
     "mongoose": "^5.0.16",
+    "nodemon": "^1.17.4",
     "queue-fifo": "^0.2.4",
     "stack-lifo": "^0.1.5",
     "winston": "^3.0.0-rc4"
