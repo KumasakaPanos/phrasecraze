@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
+    <file url="file://$PROJECT_DIR$" libraries="{phrasecraze/node_modules}" />
+    <file url="PROJECT" libraries="{@types/body-parser, @types/express, @types/faker, @types/fs-extra, @types/jest, @types/mongoose, @types/multer, @types/superagent, phrasecraze/node_modules}" />
+    <includedPredefinedLibrary name="HTTP Response Handler" />
     <includedPredefinedLibrary name="Node.js Core" />
   </component>
 </project>
