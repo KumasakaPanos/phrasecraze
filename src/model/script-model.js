@@ -3,18 +3,16 @@
 import mongoose from 'mongoose';
 
 const scriptSchema = mongoose.Schema({
-  title:{
-    type: String,
-    unique: true,
-    required: true,
-  },
-  content:{
+  content: {
     type: String,
     required: true,
   },
-  date:{
+  date: {
     type: Date,
     default: () => new Date(),
+  },
+  keywords: {
+    type: String,
   },
 });
 
