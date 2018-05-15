@@ -22,14 +22,14 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
       //   newScript = `${newScript}${script.content.slice(0,starCheck.exec(script.content).index)}`;
       //   keywords.push(script.content.slice(0,starCheck.exec(script.content).index));
       // }
-      //
-      // // // returns array
-      // // const solution = [];
-      // // for (let i = 0; i < keywords.length; i++) {
-      // //   solution.push(new Keyword(keywords[i], i));
-      // // }
-      // console.log(script, 'the solution');
-      // return script;
+      const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
+      // returns array
+      // const solution = [];
+      // for (let i = 0; i < keywords.length; i++) {
+      //   solution.push(new Keyword(keywords[i], i));
+      // }
+      console.log(keywords, 'the solution');
+      return script;
     })
     .then(keywords => response.json(keywords))
     .catch(next);

@@ -21,10 +21,10 @@ describe('/script', () => {
   beforeAll(startServer);
   afterAll(stopServer);
   afterEach(() => Script.remove({}));
-  test('POST - It should respond with a 200 status ', () => {
+  test.only('POST - It should respond with a 200 status ', () => {
     const scriptToPost = {
       title: faker.lorem.words(2),
-      content: 'Jack and *female-name* went up a *what*.',
+      content: 'Jack and [female-name] went up a [what].',
     };
     return superagent.post(apiURL)
       .send(scriptToPost)
