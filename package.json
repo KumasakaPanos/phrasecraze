@@ -3,6 +3,22 @@
   "version": "1.0.0",
   "description": "",
   "main": "db.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest --coverage --forceExit --runInBand",
+    "dbon": "mkdir -p ./db && mongod --dbpath ./db",
+    "dboff": "killall mongod"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/src/__test__/lib/test.env.js"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
     "babel-eslint": "^8.2.3",
     "babel-preset-env": "^1.6.1",
@@ -25,18 +41,10 @@
     "stack-lifo": "^0.1.5",
     "winston": "^3.0.0-rc4"
   },
-  "scripts": {
-    "test": "jest --coverage --forceExit --runInBand",
-    "dbon": "mkdir -p ./db && mongod --dbpath ./db",
-    "dboff": "killall mongod"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spinaltaper/phrasecraze.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/spinaltaper/phrasecraze/issues"
   },
