@@ -31,12 +31,12 @@ const parseCommand = (message, user) => {
   }
  
   const commandFinder = /@\S*/;
-  const command = commandFinder.exec(message).trim();
+  const command = commandFinder.exec(message);
 
   const commandVarFinder = /\s.*$/;
-  const commandVar = commandVarFinder.exec(message).trim();
+  const commandVar = commandVarFinder.exec(message);
 
-  switch (command) {
+  switch (command[0]) {
     case '@admin': {
       const dupes = clients.filter(client => client.status === 'admin');
       if (dupes.length < 1) {
@@ -56,8 +56,8 @@ const parseCommand = (message, user) => {
 
     case '@title': {
       if (user.status === 'admin') {
-        if (commandVar) {
-          script.title = commandVar;
+        if (commandVar[0]) {
+          script.title = commandVar[0]; //eslint-disable-line
         }
       } else user.socket.write('Only admins can set title-- @title rejected \n');
       break;
@@ -67,8 +67,8 @@ const parseCommand = (message, user) => {
       if (user.status === 'admin') {
         players = clients.filter(client => client.status !== 'admin');
 
-        if (commandVar) {
-          script.content = commandVar;
+        if (commandVar[0]) {
+          script.content = commandVar[0]; //eslint-disable-line
         }
         
         user.socket.write('You have submitted a script \n');
@@ -106,7 +106,7 @@ const parseCommand = (message, user) => {
     }
 
     case '@submit': {
-      const parsedResponse = commandVar.split(' ');
+      const parsedResponse = commandVar[0].split(' ');
       const current = players.filter(player => player.id === user.id);
       if (current.pKeys.length === parsedResponse.length) {
         for (let i = 0; i < parsedResponse.length; i++) {
