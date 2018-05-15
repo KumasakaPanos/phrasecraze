@@ -3,7 +3,7 @@
 // Vinicio - The current winston prefers to be imported with ES5
 const winston = require('winston');
 
-const logger = winston.createLogger({
+const logger = module.exports = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
   transports: [
@@ -16,4 +16,3 @@ logger.INFO = 'info';
 logger.ERROR = 'error';
 logger.VERBOSE = 'verbose';
 
-export default logger;
