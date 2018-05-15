@@ -5,24 +5,27 @@ const logger = require('./logger');
 const faker = require('faker');
 const superagent = require('superagent');
 
-const PORT = process.env.PORT;
 const path = `:${process.env.HTTP_PORT}`;
 
 let keys = [];
 const filledKeys = [];
-let gPlayers = [];
+const script = {};
+let finScript = '';
+
+let clients = [];
+let players = [];
 
 const app = net.createServer();
-let clients = [];
+
 function Client(socket) {
   this.socket = socket;
-  this.nickname = faker.name.firstName();
+  this.name = `${faker.name.firstName()} + ${faker.name.lastName()}`;
   this.status = 'user';
-  this.playerId = null;
+  this.id = faker.random.uuid;
   this.pKeys = [];
 } 
 
-const parseCommand = (message, socket) => {
+const parseCommand = (message, user) => {
   if (!message.startsWith('@')) {
     return false;
   }
@@ -34,97 +37,113 @@ const parseCommand = (message, socket) => {
   const commandVar = commandVarFinder.exec(message);
 
   switch (command) {
-    case '@write': {
-      const dupe = clients.filter(client => client.status === 'admin');
-      if (!dupe) {
-        const admin = clients.filter(client => client.socket === socket);
-        admin.status = 'admin';
-        socket.write('You are the admin and have submitted a script');
-        const script = {
-          content: commandVar,
-        };
+    case '@admin': {
+      const dupes = clients.filter(client => client.status === 'admin');
+      if (dupes.length < 1) {
+        user.status = 'admin';
+        user.socket.write('You have been declared the admin \n');
+      } else user.socket.write('An admin has already been declared-- @admin rejected \n');
+      break;
+    }
 
+    case '@notadmin': {
+      if (user.status === 'admin') {
+        user.status = 'user';
+        user.socket.write('You are no longer the admin \n');
+      }
+      break;
+    }
+
+    case '@title': {
+      if (user.status === 'admin') {
+        if (commandVar) {
+          script.title = commandVar;
+        }
+      } else user.socket.write('Only admins can set title-- @title rejected \n');
+      break;
+    }
+
+    case '@write': {
+      if (user.status === 'admin') {
+        players = clients.filter(client => client.status !== 'admin');
+
+        if (commandVar) {
+          script.content = commandVar;
+        }
+        
+        user.socket.write('You have submitted a script \n');
         superagent.post(`${path}/script`)
           .send(script)
           .then((res) => {
             if (res.status === 200) {
-              socket.write('Script submitted successfully \n');
-
-              const players = clients.filter(client => client.socket !== socket);
-              let counter = 0;
-              players.forEach((player) => {
-                player.playerId = counter;
-                counter += 1;
-              });
-                                
+              user.socket.write('Script submitted successfully \n');
+           
               keys = res.body;
 
-              for (let a = 0; a < players.length; a++) {
-                for (let i = 0; i < keys.length; i++) {
-                  if (keys.length % players.length === a) {
-                    players[a].pKeys.push(keys[i].content);
-                  }
-                }
+              for (let i = 0; i < keys.length; i++) {
+                if (i >= players.length) {
+                  players[i % players.length].pKeys.push(keys[i]);
+                } else players[i].pKeys.push(keys[i]);
               }
-
-              gPlayers = players.map(player => player);
               
               players.forEach((player) => {
-                player.socket.write(`Here are your template words. Please write your replacements space separated and following an @submit command. \n
-                ---> ${player.pKeys}`);
+                player.socket.write(`Here are your template words. \n Please write your replacements space separated and following an @submit command. \n
+                ---> ${player.pKeys.content}`);
               });
             }
           });
-      }
-      socket.write('an admin has already been declared-- @write rejected');
+      } else user.socket.write('Only admits may write scripts-- @write rejected');
+      break;
+    }
+
+    case '@mywords': {
+      players.forEach((player) => {
+        if (player.id === user.id) {
+          user.socket.write('${player.pKeys.content');
+        }
+      });
       break;
     }
 
     case '@submit': {
       const parsedResponse = commandVar.split(' ');
-      const user = clients.filter(client => (client.socket === socket));
-      if (user.status === user) {
-        const current = gPlayers.filter(player => player.socket === socket);
-        if (current.keys) { 
-          for (let i = 0; i < parsedResponse.length; i++) {
-            current.keys[i].content = parsedResponse[i];
-            filledKeys.push(current.keys[i]);
-          }
+      const current = players.filter(player => player.id === user.id);
+      if (current.pKeys.length === parsedResponse.length) {
+        for (let i = 0; i < parsedResponse.length; i++) {
+          current.pKeys.content[i] = parsedResponse[i];
+          filledKeys.push(current.pKeys[i]);
         }
-        socket.write('no keys exist-- @submit rejected');
-      }
-      socket.write('the admin may not submit words-- @submit rejected');
+      } else user.socket.write('Number of words entered is incorrect. \n Use @mywords to see your words again. \n');
       break;
     }
 
     case '@submitAll': {
-      const user = clients.filter(client => client.socket === socket);
       if (user.status === 'admin') {
         if (filledKeys.length !== keys.length) {
           superagent.post(`${path}/keys`)
             .send(filledKeys)
             .then((res) => {
               if (res.status === 200) {
-                socket.write('Player responses submitted successfully \n');
+                user.write('Player responses submitted successfully \n');
               }
             });
-          socket.write('keys not filled-- @submit rejected');
+          user.write('keys not filled-- @submit rejected \n');
         }
       }
-      socket.write('only admins may submit all-- @submit rejected');
+      user.write('only admins may submit all-- @submit rejected \n');
       break;
     }
 
     case '@pull': {
-      const user = clients.filter(client => client.socket === socket);
       if (user.status === 'admin') {
-        superagent.get(`${path}/script`)
+        superagent.get(`${path}/script/:${script.title}`)
           .then((res) => {
             if (res.status === 200) {
-              socket.write('Final script pulled successfully \n');
+              finScript = res.body.content;
+              user.write('Final script pulled successfully \n');
             }
             clients.forEach((client) => {
-              client.socket.write(res.body);
+              client.socket.write(finScript);
             });
           });
       }
@@ -132,36 +151,36 @@ const parseCommand = (message, socket) => {
     }
       
     default:
-      socket.write('That command does not exist!');
+      user.socket.write('That command does not exist! \n');
       break;
   }
   return true;
 };
-  
-const removeClient = socket => () => {
-  clients = clients.filter(client => client.socket !== socket);
-  logger.log(logger.INFO, `Removing ${socket.name}`);
+
+const removeClient = user => () => {
+  clients = clients.filter(client => client.socket !== user.socket);
+  players = players.filter(player => player.socket !== user.socket);
+  clients.forEach(client => client.socket.write(`${user.name} has left the room.`));
 };
 
 app.on('connection', (socket) => {
-  logger.log(logger.INFO, 'new socket');
-  const newClient = new Client(socket);
-
-  clients.push(newClient);
+  const user = new Client(socket);
+  
+  clients.push(user);
   socket.write('Welcome to the Phrase Craze server!\n');
-  socket.write(`Your name is ${newClient.nickname}\n`);
-
+  socket.write(`Your name is ${user.name}\n`);
+  
   socket.on('data', (data) => {
     const message = data.toString().trim();
-
-    if (parseCommand(message, socket)) {
+    
+    if (parseCommand(message, user)) {
       return;
     }
-
+    
     clients.forEach((client) => {
-      if (client.socket !== socket) {
-        client.socket.write(`${client.nickname}: ${message}\n`);
-      } 
+      if (client.id !== user.id) {
+        client.socket.write(`${client.name}: ${message}\n`);
+      }
     }); 
   });
 
@@ -175,12 +194,12 @@ app.on('connection', (socket) => {
 const server = module.exports = {};
 
 server.start = () => {
-  if (!process.env.PORT) {
-    logger.log(logger.ERROR, 'missing PORT');
-    throw new Error('missing PORT');
+  if (!process.env.TCP_PORT) {
+    logger.log(logger.ERROR, 'missing TCP PORT');
+    throw new Error('missing TCP PORT');
   }
-  logger.log(logger.INFO, `Server is up on PORT ${process.env.PORT}`);
-  return app.listen({ port: process.env.PORT }, () => {});
+  logger.log(logger.INFO, `Server is up on PORT ${process.env.TCP_PORT}`);
+  return app.listen({ port: process.env.TCP_PORT }, () => {});
 };
 
 server.stop = () => {
