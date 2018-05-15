@@ -19,9 +19,9 @@ const app = net.createServer();
 
 function Client(socket) {
   this.socket = socket;
-  this.name = `${faker.name.firstName()} + ${faker.name.lastName()}`;
+  this.name = `${faker.name.firstName()} ${faker.name.lastName()}`;
   this.status = 'user';
-  this.id = faker.random.uuid;
+  this.id = faker.random.uuid();
   this.pKeys = [];
 } 
 
@@ -31,10 +31,10 @@ const parseCommand = (message, user) => {
   }
  
   const commandFinder = /@\S*/;
-  const command = commandFinder.exec(message);
+  const command = commandFinder.exec(message).trim();
 
   const commandVarFinder = /\s.*$/;
-  const commandVar = commandVarFinder.exec(message);
+  const commandVar = commandVarFinder.exec(message).trim();
 
   switch (command) {
     case '@admin': {
@@ -99,7 +99,7 @@ const parseCommand = (message, user) => {
     case '@mywords': {
       players.forEach((player) => {
         if (player.id === user.id) {
-          user.socket.write('${player.pKeys.content');
+          user.socket.write(`${player.pKeys.content}`);
         }
       });
       break;
@@ -167,19 +167,19 @@ app.on('connection', (socket) => {
   const user = new Client(socket);
   
   clients.push(user);
-  socket.write('Welcome to the Phrase Craze server!\n');
-  socket.write(`Your name is ${user.name}\n`);
+  user.socket.write('Welcome to the Phrase Craze server!\n');
+  user.socket.write(`Your name is ${user.name}\n`);
   
   socket.on('data', (data) => {
     const message = data.toString().trim();
-    
+
     if (parseCommand(message, user)) {
       return;
     }
     
     clients.forEach((client) => {
       if (client.id !== user.id) {
-        client.socket.write(`${client.name}: ${message}\n`);
+        client.socket.write(`${user.name}: ${message}\n`);
       }
     }); 
   });
@@ -190,6 +190,7 @@ app.on('connection', (socket) => {
     removeClient(socket)();
   });
 });
+
 
 const server = module.exports = {};
 
