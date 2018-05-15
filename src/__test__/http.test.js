@@ -5,7 +5,7 @@ import superagent from 'superagent';
 import Script from '../model/script-model';
 import { startServer, stopServer } from '../lib/http';
 
-const apiURL = `http://localhost:${process.env.PORT}/api/script`;
+const apiURL = `http://localhost:${process.env.PORT}/script`;
 
 const createScriptMock = () => {
   return new Script({
@@ -14,7 +14,7 @@ const createScriptMock = () => {
   }).save();
 };
 
-describe('/api/script', () => {
+describe('/script', () => {
   beforeAll(startServer);
   afterAll(stopServer);
   afterEach(() => Script.remove({}));
@@ -26,8 +26,8 @@ describe('/api/script', () => {
     return superagent.post(apiURL)
       .send(scriptToPost)
       .then((response) => {
+        console.log(response.body, 'inside the post test');
         expect(response.status).toEqual(200);
-        expect(response.body.title).toEqual(scriptToPost.title);
         expect(response.body.content).toEqual(scriptToPost.content);
         expect(response.body._id).toBeTruthy();
         expect(response.body.date).toBeTruthy();

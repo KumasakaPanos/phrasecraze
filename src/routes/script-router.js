@@ -11,22 +11,21 @@ const jsonParser = bodyParser.json();
 scriptRouter.post('/script', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
   return new Script(request.body).save()
-    console.log(response.body, 'inside the POST route')
     .then((script) => {
-      console.log(script, 'inside .then on POST route');
+      return new Script(request.body).save()
       // scrub logic
-      const keywords = script.match() 
-      // returns array
-      const solution = [];
-      for (let i = 0; i < keywords.length; i++) {
-        solution.push(new keywords(keywords[i], i));
-      }
+      // const keywords = script.match()
+      // // returns array
+      // const solution = [];
+      // for (let i = 0; i < keywords.length; i++) {
+      //   solution.push(new keywords(keywords[i], i));
+      // }
       // for loop over array to touch each string
       // assign Keyword parameters of content and position
      
       // return array of keywords
     })
-    .then(keywords => response.json(keywords))
+    .then(script => response.json(script))
     .catch(next);
 });
 
