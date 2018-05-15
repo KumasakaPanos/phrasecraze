@@ -13,7 +13,7 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
   return new Script(request.body).save()
     .then((script) => {
       // scrub logic
-      const keywords = script.match() 
+      const keywords = script.match(); 
       // returns array
       const solution = [];
       for (let i = 0; i < keywords.length; i++) {
