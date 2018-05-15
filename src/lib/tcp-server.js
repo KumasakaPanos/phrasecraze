@@ -165,14 +165,12 @@ app.on('connection', (socket) => {
     }); 
   });
 
-
   socket.on('close', removeClient(socket));
   socket.on('error', () => {
     logger.log(logger.ERROR, socket.name);
     removeClient(socket)();
   });
 });
-
 
 const server = module.exports = {};
 
