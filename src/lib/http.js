@@ -2,6 +2,20 @@
 
 import express from 'express';
 import mongoose from 'mongoose';
+
+import bodyParser from 'body-parser';
+import logger from './logger';
+import loggerMiddleware from './logger-middleware';
+import errorMiddleware from './error-middleware';
+import scriptRouter from '../routes/script-router';
+
+const app = express();
+let server = null;
+
+app.use(loggerMiddleware);
+
+app.use(scriptRouter);
+
 import logger from './logger';
 import scriptRouter from '../routes/script-router';
 
@@ -12,9 +26,17 @@ const app = express();
 let server = null;
 
 app.use(scriptRouter);
+
 app.all('*', (request, response) => { 
   return response.sendStatus(404);  
 });
+
+
+// app.use(bodyParser);
+
+app.use(errorMiddleware);
+
+
 
 const startServer = () => {
   return mongoose.connect(process.env.MONGODB_URI)
@@ -41,4 +63,3 @@ const stopServer = () => {
 };
 
 export { startServer, stopServer };
-
