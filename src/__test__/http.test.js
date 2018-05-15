@@ -5,17 +5,17 @@ import superagent from 'superagent';
 import Script from '../model/script-model';
 import { startServer, stopServer } from '../lib/http';
 
-const apiURL = `http://localhost:${process.env.PORT}/script`;
+const apiURL = `http://localhost:${process.env.HTTP_PORT}/script`;
 
 const createScriptMock = () => {
   return new Script({
     title: faker.lorem.words(2),
-    content: 'Jack and *female-name* went up a what.',
+    content: 'Jack and [female-name] went up a what.',
     id: 'this is a test id',
   }).save();
 };
 
-const removeScriptMock = () => Script.remove ({});
+const removeScriptMock = () => Script.remove({});
 
 describe('/script', () => {
   beforeAll(startServer);

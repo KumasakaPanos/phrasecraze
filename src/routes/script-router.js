@@ -26,13 +26,13 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
       // returns array
       const solution = [];
       for (let i = 0; i < keywords.length; i++) {
-        console.log(keywords[i]);
         solution.push(new Word(keywords[i], i));
       }
-      console.log(keywords[1], 'the solution');
-      return script;
+      return solution;
     })
-    .then(keywords => response.json(keywords))
+    .then((keywords) => {
+      return response.json(keywords);
+    })
     .catch(next);
 });
 
