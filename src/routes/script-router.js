@@ -52,3 +52,12 @@ scriptRouter.get('/script/:id', (request, response, next) => {
 });
 
 export default scriptRouter;
+
+scriptRouter.get('/api/script/:title', (request, response, next) => {
+  if (!request.params.id) return next(new HttpError(400, 'Bad Content: id is required'));
+  return Script.findOne(request.params.title)
+    .then(script => response.json(script))
+    .catch(next);
+});
+export default scriptRouter;
+
