@@ -29,10 +29,9 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
     .catch(next);
 });
 
-scriptRouter.get('/api/script/:title', (request, response, next) => {
-  if (!request.params.id) return next(new HttpError(400, 'Bad Content: id is required'));
-  return Script.findOne(request.params.title)
-    .then(script => response.json(script))
+scriptRouter.get('/script/:id', (request, response, next) => {
+  return Script.findById(request.params.id)
+    .then(response.json(Script))
     .catch(next);
 });
 
