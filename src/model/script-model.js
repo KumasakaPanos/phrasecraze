@@ -3,6 +3,10 @@
 import mongoose from 'mongoose';
 
 const scriptSchema = mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
   content: {
     type: String,
     required: true,
