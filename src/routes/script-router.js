@@ -10,25 +10,26 @@ import logger from '../lib/logger';
 const scriptRouter = new Router();
 const jsonParser = bodyParser.json();
 
+const Word = class {
+  constructor(content, placement) {
+    this.content = content;
+    this.placement = placement;
+  }
+};
+
 scriptRouter.post('/script', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
   return new Script(request.body).save()
     .then((script) => {
-      // script.title = script._id;
-      // // scrub logic
-      // let starCheck=/\*/
-      // let newScript=''
-      // while(starCheck.test(script.content)) {
-      //   newScript = `${newScript}${script.content.slice(0,starCheck.exec(script.content).index)}`;
-      //   keywords.push(script.content.slice(0,starCheck.exec(script.content).index));
-      // }
+      // parsing the keywords out of the script
       const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
       // returns array
-      // const solution = [];
-      // for (let i = 0; i < keywords.length; i++) {
-      //   solution.push(new Keyword(keywords[i], i));
-      // }
-      console.log(keywords, 'the solution');
+      const solution = [];
+      for (let i = 0; i < keywords.length; i++) {
+        console.log(keywords[i]);
+        solution.push(new Word(keywords[i], i));
+      }
+      console.log(keywords[1], 'the solution');
       return script;
     })
     .then(keywords => response.json(keywords))
