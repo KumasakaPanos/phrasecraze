@@ -154,7 +154,7 @@ const parseCommand = (message, user) => {
             keys.keywordsArray[i] = filledKeys[i];
           }
           console.log('override keys', keys);
-          superagent.post(`${path}/keys`)
+          superagent.put(`${path}/keys`)
             .send(keys)
             .then((res) => {
               if (res.status === 200) {
