@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "jest --coverage --forceExit --runInBand",
+    "test": "jest --coverage --forceExit --runInBand --verbose",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
     "dboff": "killall mongod"
   },

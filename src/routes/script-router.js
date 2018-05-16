@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import { Router } from 'express';
 import HttpError from 'http-errors';
 import Script from '../model/script-model';
-import Keyword from '../model/keyword-model';
 import logger from '../lib/logger';
 
 const scriptRouter = new Router();
