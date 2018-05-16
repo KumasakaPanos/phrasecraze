@@ -4,6 +4,7 @@ const net = require('net');
 const logger = require('./logger');
 const faker = require('faker');
 const superagent = require('superagent');
+const chalk = require('chalk');
 
 const path = `http://localhost:${process.env.HTTP_PORT}`;
 
@@ -14,6 +15,10 @@ let finScript = '';
 
 let clients = [];
 let players = [];
+const greenText = chalk.keyword('green');
+const yellowText = chalk.keyword('yellow');
+const redText = chalk.keyword('red');
+const grayText = chalk.keyword('gray');
 
 const app = net.createServer();
 
@@ -46,7 +51,43 @@ const parseCommand = (message, user) => {
       } else user.socket.write('An admin has already been declared-- @admin rejected \n');
       break;
     }
-
+    case '@rules': {
+      user.socket.write(yellowText(`
+       _____                  _____     _         
+      |   __|___ _____ ___   | __  |_ _| |___ ___ 
+      |  |  | .'|     | -_|  |    -| | | | -_|_ -|
+      |_____|__,|_|_|_|___|  |__|__|___|_|___|___|                                          
+    \n`));
+      user.socket.write(grayText(`
+      "PhraseCraze" is a derivative of the popular word game "Mad-Libs"! 
+      The admin will write a story with certain words surrounded in brackets []. 
+      The words that are surrounded by brackets are known as "keywords" and these keywords are sent to players, the players then put their own keywords in place of the generic words. 
+      For example: If the admin writes "[Male_Name] and his pet [Animal] went for a walk!",
+      two keywords are sent out and players insert their own words to match the description of the word in the brackets.
+      The script is then reconstructed with player generated words and shown back to all players: "Gerald and his pet koala went for a walk!"
+    \n`));
+      break;
+    }
+    case '@commands': {
+      user.socket.write(greenText(`                             
+       _____                             _    __    _     _   
+      |     |___ _____ _____ _____ ___ _| |  |  |  |_|___| |_ 
+      |   --| . |     |     |  -  |   | . |  |  |__| |_ -|  _|
+      |_____|___|_|_|_|_|_|_|__|__|_|_|___|  |_____|_|___|_|   
+      \n`));
+      user.socket.write(grayText(`
+      @commands - Displays a list of game commands. 
+      @rules - Displays the rules of PhaseCraze.
+      @admin - If typed, makes the player who entered the command the admin of the game (assuming there is not already an admin).
+      @write script goes [here] - Begin writing a script (assuming you are the admin). Press Enter key to submit your script.
+      @notadmin - Removes admin status (assuming you are the admin).
+      @title - Set the title of the script (assuming you are the admin).
+      @mywords - Displays your keywords. 
+      @submit - Submits your keywrds (assuming you are not the admin).
+      @submitall - Reconstructs the script with player generated keywords (assuming you are the admin).
+    \n`));
+      break;
+    }
     case '@notadmin': {
       if (user.status === 'admin') {
         user.status = 'user';
@@ -73,12 +114,25 @@ const parseCommand = (message, user) => {
           script.content = commandVar[0]; //eslint-disable-line
           console.log(script);          
         }
-        user.socket.write('You have submitted a script \n');
+        user.socket.write(yellowText(`
+                                                                         __ 
+        _____         _     _      _____     _         _ _   _         _|  |
+       |   __|___ ___|_|___| |_   |   __|_ _| |_ _____|_| |_| |_ ___ _| |  |
+       |__   |  _|  _| | . |  _|  |__   | | | . |     | |  _|  _| -_| . |__|
+       |_____|___|_| |_|  _|_|    |_____|___|___|_|_|_|_|_| |_| |___|___|__|
+        
+        \n`));
         return superagent.post(`${path}/script`)
           .send(script)
           .then((res) => {
             if (res.status === 200) {
-              user.socket.write('Script submitted successfully \n');
+              user.socket.write(yellowText(`
+                                            __ 
+              _____                        |  |
+             |   __|_ _ ___ ___ ___ ___ ___|  |
+             |__   | | |  _|  _| -_|_ -|_ -|__|
+             |_____|___|___|___|___|___|___|__|
+              \n`));
            
               keys = res.body;
               console.log(keys);
@@ -95,7 +149,6 @@ const parseCommand = (message, user) => {
                 if (counter === keys.keywordsArray.length) {
                   console.log('length of Keywords', keys.keywordsArray.length);
                   i = Infinity;
-
                 }
                 if (i === players.length - 1) {
                   i = -1;
@@ -191,7 +244,36 @@ app.on('connection', (socket) => {
   clients.push(user);
   user.socket.write('Welcome to the Phrase Craze server!\n');
   user.socket.write(`Your name is ${user.name}\n`);
-  
+  user.socket.write(greenText(` 
+ '##:::::'##:'########:'##::::::::'######:::'#######::'##::::'##:'########:
+  ##:'##: ##: ##.....:: ##:::::::'##... ##:'##.... ##: ###::'###: ##.....::
+  ##: ##: ##: ##::::::: ##::::::: ##:::..:: ##:::: ##: ####'####: ##:::::::
+  ##: ##: ##: ######::: ##::::::: ##::::::: ##:::: ##: ## ### ##: ######:::
+  ##: ##: ##: ##...:::: ##::::::: ##::::::: ##:::: ##: ##. #: ##: ##...::::
+  ##: ##: ##: ##::::::: ##::::::: ##::: ##: ##:::: ##: ##:.:: ##: ##:::::::
+ . ###. ###:: ########: ########:. ######::. #######:: ##:::: ##: ########:
+ :...::...:::........::........:::......::::.......:::..:::::..::........::\n`));
+  user.socket.write(yellowText(` 
+ '########::'#######::
+ ... ##..::'##.... ##:
+ ::: ##:::: ##:::: ##:
+ ::: ##:::: ##:::: ##:
+ ::: ##:::: ##:::: ##:
+ ::: ##:::: ##:::: ##:
+ ::: ##::::. #######::
+ :::..::::::.......:::\n`));
+  user.socket.write(redText(` 
+ '########::'##::::'##:'########:::::'###:::::'######::'########::'######::'########:::::'###::::'########:'########:
+  ##.... ##: ##:::: ##: ##.... ##:::'## ##:::'##... ##: ##.....::'##... ##: ##.... ##:::'## ##:::..... ##:: ##.....::
+  ##:::: ##: ##:::: ##: ##:::: ##::'##:. ##:: ##:::..:: ##::::::: ##:::..:: ##:::: ##::'##:. ##:::::: ##::: ##:::::::
+  ########:: #########: ########::'##:::. ##:. ######:: ######::: ##::::::: ########::'##:::. ##:::: ##:::: ######:::
+  ##.....::: ##.... ##: ##.. ##::: #########::..... ##: ##...:::: ##::::::: ##.. ##::: #########::: ##::::: ##...::::
+  ##:::::::: ##:::: ##: ##::. ##:: ##.... ##:'##::: ##: ##::::::: ##::: ##: ##::. ##:: ##.... ##:: ##:::::: ##:::::::
+  ##:::::::: ##:::: ##: ##:::. ##: ##:::: ##:. ######:: ########:. ######:: ##:::. ##: ##:::: ##: ########: ########:
+ ..:::::::::..:::::..::..:::::..::..:::::..:::......:::........:::......:::..:::::..::..:::::..::........::........::\n`));
+  user.socket.write(grayText(`
+  The best TCP word game around! For rules, type "@rules". For a list of commands, type "@commands".
+  \n`));
   socket.on('data', (data) => {
     const message = data.toString().trim();
 
