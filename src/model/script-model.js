@@ -15,8 +15,6 @@ const scriptSchema = mongoose.Schema({
     type: Date,
     default: () => new Date(),
   },
-  keywords: [
-  ],
 });
 
 export default mongoose.model('scripts', scriptSchema);

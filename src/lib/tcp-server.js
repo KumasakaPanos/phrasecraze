@@ -157,17 +157,19 @@ const parseCommand = (message, user) => {
             .send(keys)
             .then((res) => {
               if (res.status === 200) {
-                finScript = res.body.content;
+                finScript = res.body;
                 user.socket.write('Final script pulled successfully \n');
               }
               clients.forEach((client) => {
                 client.socket.write(finScript);
               });
             });
-          user.socket.write('keys not filled-- @submit rejected \n');
+        } else { 
+          user.socket.write('keys not filled-- @submit rejected \n'); 
         }
+      } else {
+        user.socket.write('only admins may submit all-- @submit rejected \n');
       }
-      user.socket.write('only admins may submit all-- @submit rejected \n');
       break;
     }
       
@@ -179,8 +181,8 @@ const parseCommand = (message, user) => {
 };
 
 const removeClient = user => () => {
-  clients = clients.filter(client => client.socket !== user.socket);
-  players = players.filter(player => player.socket !== user.socket);
+  clients = clients.filter(client => client.id !== user.id);
+  players = players.filter(player => player.id !== user.id);
   clients.forEach(client => client.socket.write(`${user.name} has left the room.`));
 };
 
@@ -205,7 +207,7 @@ app.on('connection', (socket) => {
     }); 
   });
 
-  socket.on('close', removeClient(socket));
+  socket.on('close', removeClient(user));
   socket.on('error', () => {
     logger.log(logger.ERROR, socket.name);
     removeClient(socket)();
