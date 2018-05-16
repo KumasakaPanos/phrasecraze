@@ -122,54 +122,52 @@ const parseCommand = (message, user) => {
     case '@mywords': {
       players.forEach((player) => {
         if (player.id === user.id) {
-          user.socket.write(`${player.pKeys.content}`);
+          user.socket.write(`${player.words}`);
         }
       });
       break;
     }
 
     case '@submit': {
-      const parsedResponse = commandVar[0].split(' ');
+      const parsedResponse = commandVar[0].trim().split(' ');
       const current = players.filter(player => player.id === user.id);
-      if (current.pKeys.length === parsedResponse.length) {
-        for (let i = 0; i < parsedResponse.length; i++) {
-          current.pKeys.content[i] = parsedResponse[i];
-          filledKeys.push(current.pKeys[i]);
+      console.log('current', current);
+      console.log('parsed response', parsedResponse);
+      if (current[0].words.length === parsedResponse.length) {
+        for (let i = 0; i < current[0].pKeys.length; i++) {          
+          current[0].pKeys[i].content = parsedResponse[i];
+          filledKeys.push(current[0].pKeys[i]);
+          console.log('filled keys array', filledKeys);
         }
-      } else user.socket.write('Number of words entered is incorrect. \n Use @mywords to see your words again. \n');
+      } else {
+        user.socket.write('Number of words entered is incorrect. \n Use @mywords to see your words again. \n');
+      }
       break;
     }
 
     case '@submitAll': {
       if (user.status === 'admin') {
-        if (filledKeys.length !== keys.length) {
+        console.log('Before override keys', keys);
+        if (filledKeys.length === keys.keywordsArray.length) {
+          for (let i = 0; i < keys.keywordsArray.length; i++) {
+            keys.keywordsArray[i] = filledKeys[i];
+          }
+          console.log('override keys', keys);
           superagent.post(`${path}/keys`)
-            .send(filledKeys)
+            .send(keys)
             .then((res) => {
               if (res.status === 200) {
-                user.write('Player responses submitted successfully \n');
+                finScript = res.body.content;
+                user.socket.write('Final script pulled successfully \n');
               }
+              clients.forEach((client) => {
+                client.socket.write(finScript);
+              });
             });
-          user.write('keys not filled-- @submit rejected \n');
+          user.socket.write('keys not filled-- @submit rejected \n');
         }
       }
-      user.write('only admins may submit all-- @submit rejected \n');
-      break;
-    }
-
-    case '@pull': {
-      if (user.status === 'admin') {
-        superagent.get(`${path}/script/:${script.title}`)
-          .then((res) => {
-            if (res.status === 200) {
-              finScript = res.body.content;
-              user.write('Final script pulled successfully \n');
-            }
-            clients.forEach((client) => {
-              client.socket.write(finScript);
-            });
-          });
-      }
+      user.socket.write('only admins may submit all-- @submit rejected \n');
       break;
     }
       
