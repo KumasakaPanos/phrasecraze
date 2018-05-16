@@ -24,14 +24,16 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
       // parsing the keywords out of the script
       const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
       // returns array
-      const solution = [];
+      let solution = {};
+      solution.keywordsArray=new Array;
+      solution.title=script.title;
       for (let i = 0; i < keywords.length; i++) {
-        solution.push(new Word(keywords[i], i));
+        solution.keywordsArray.push(new Word(keywords[i], i));
       }
       return solution;
     })
-    .then((keywords) => {
-      return response.json(keywords);
+    .then((solution) => {
+      return response.json(solution);
     })
     .catch(next);
 });
