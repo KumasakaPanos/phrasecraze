@@ -95,6 +95,7 @@ const parseCommand = (message, user) => {
                 if (counter === keys.keywordsArray.length) {
                   console.log('length of Keywords', keys.keywordsArray.length);
                   i = Infinity;
+
                 }
                 if (i === players.length - 1) {
                   i = -1;
@@ -115,7 +116,7 @@ const parseCommand = (message, user) => {
           })
           .catch(error => new Error(error));
       }
-      user.socket.write('Only admits may write scripts-- @write rejected');
+      user.socket.write('Only admins may write scripts-- @write rejected');
       break;
     }
 
