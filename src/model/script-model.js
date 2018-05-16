@@ -15,11 +15,6 @@ const scriptSchema = mongoose.Schema({
     type: Date,
     default: () => new Date(),
   },
-  keywords: [
-    {
-      type: mongoose.Schema.Types.ObjectId, ref: 'keywords', 
-    },
-  ],
 });
 
 export default mongoose.model('scripts', scriptSchema);
