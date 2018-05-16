@@ -23,6 +23,7 @@ function Client(socket) {
   this.status = 'user';
   this.id = faker.random.uuid();
   this.pKeys = [];
+  this.words = [];
 } 
 
 const parseCommand = (message, user) => {
@@ -81,85 +82,93 @@ const parseCommand = (message, user) => {
            
               keys = res.body;
               console.log(keys);
-              console.log(players);
 
+              console.log('players', players);
+
+              let counter = 0;
               for (let i = 0; i < players.length; i++) {
-                let counter = 0;
-                players[i].pKeys.push(keys[i]);
+                // console.log('keys to be pushed', keys.keywordsArray[i].content);
+                players[i].pKeys.push(keys.keywordsArray[counter]);
+                console.log('keywords for each player', players[i].pKeys);
 
                 counter += 1;
-                if (counter === keys.length) {
-                  return null;
+                if (counter === keys.keywordsArray.length) {
+                  console.log('length of Keywords', keys.keywordsArray.length);
+                  i = Infinity;
+
                 }
                 if (i === players.length - 1) {
-                  i = 0;
+                  i = -1;
                 }
-                console.log(players[i].pKeys);
               }
-              
               players.forEach((player) => {
+                for (let i = 0; i < player.pKeys.length; i++) {
+                  player.words.push(player.pKeys[i].content);
+                }
+              });
+              console.log('players', players);
+              players.forEach((player) => {
+                console.log('words for players', player.words);
                 player.socket.write(`Here are your template words. \n Please write your replacements space separated and following an @submit command. \n
-                ---> ${player.pKeys.content}`);
+                ---> ${player.words} `);  
               });
             }
           })
           .catch(error => new Error(error));
       }
-      user.socket.write('Only admits may write scripts-- @write rejected');
+      user.socket.write('Only admins may write scripts-- @write rejected');
       break;
     }
 
     case '@mywords': {
       players.forEach((player) => {
         if (player.id === user.id) {
-          user.socket.write(`${player.pKeys.content}`);
+          user.socket.write(`${player.words}`);
         }
       });
       break;
     }
 
     case '@submit': {
-      const parsedResponse = commandVar[0].split(' ');
+      const parsedResponse = commandVar[0].trim().split(' ');
       const current = players.filter(player => player.id === user.id);
-      if (current.pKeys.length === parsedResponse.length) {
-        for (let i = 0; i < parsedResponse.length; i++) {
-          current.pKeys.content[i] = parsedResponse[i];
-          filledKeys.push(current.pKeys[i]);
+      console.log('current', current);
+      console.log('parsed response', parsedResponse);
+      if (current[0].words.length === parsedResponse.length) {
+        for (let i = 0; i < current[0].pKeys.length; i++) {          
+          current[0].pKeys[i].content = parsedResponse[i];
+          filledKeys.push(current[0].pKeys[i]);
+          console.log('filled keys array', filledKeys);
         }
-      } else user.socket.write('Number of words entered is incorrect. \n Use @mywords to see your words again. \n');
+      } else {
+        user.socket.write('Number of words entered is incorrect. \n Use @mywords to see your words again. \n');
+      }
       break;
     }
 
     case '@submitAll': {
       if (user.status === 'admin') {
-        if (filledKeys.length !== keys.length) {
+        console.log('Before override keys', keys);
+        if (filledKeys.length === keys.keywordsArray.length) {
+          for (let i = 0; i < keys.keywordsArray.length; i++) {
+            keys.keywordsArray[i] = filledKeys[i];
+          }
+          console.log('override keys', keys);
           superagent.post(`${path}/keys`)
-            .send(filledKeys)
+            .send(keys)
             .then((res) => {
               if (res.status === 200) {
-                user.write('Player responses submitted successfully \n');
+                finScript = res.body.content;
+                user.socket.write('Final script pulled successfully \n');
               }
+              clients.forEach((client) => {
+                client.socket.write(finScript);
+              });
             });
-          user.write('keys not filled-- @submit rejected \n');
+          user.socket.write('keys not filled-- @submit rejected \n');
         }
       }
-      user.write('only admins may submit all-- @submit rejected \n');
-      break;
-    }
-
-    case '@pull': {
-      if (user.status === 'admin') {
-        superagent.get(`${path}/script/:${script.title}`)
-          .then((res) => {
-            if (res.status === 200) {
-              finScript = res.body.content;
-              user.write('Final script pulled successfully \n');
-            }
-            clients.forEach((client) => {
-              client.socket.write(finScript);
-            });
-          });
-      }
+      user.socket.write('only admins may submit all-- @submit rejected \n');
       break;
     }
       
