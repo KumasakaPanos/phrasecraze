@@ -81,11 +81,21 @@ const parseCommand = (message, user) => {
            
               keys = res.body;
               console.log(keys);
-              // keys[index][content]
-              for (let i = 0; i < keys.length; i++) {
-                if (i >= players.length) {
-                  players[i % players.length].pKeys.push(keys[i]);
-                } else players[i].pKeys.push(keys[i]);
+
+              console.log(players);
+
+              for (let i = 0; i < players.length; i++) {
+                let counter = 0;
+                players[i].pKeys.push(keys[i]);
+
+                counter += 1;
+                if (counter === keys.length) {
+                  return null;
+                }
+                if (i === players.length - 1) {
+                  i = 0;
+                }
+                console.log(players[i].pKeys);
               }
               
               players.forEach((player) => {

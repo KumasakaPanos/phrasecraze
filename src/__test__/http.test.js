@@ -29,12 +29,9 @@ describe('/script', () => {
     return superagent.post(apiURL)
       .send(scriptToPost)
       .then((response) => {
-        console.log(response.body, 'inside the post test');
+        console.log(response.body, 'this is the object that will be passed onto the TCP Server');
         expect(response.status).toEqual(200);
         expect(response.body.title).toEqual(scriptToPost.title);
-        expect(response.body.content).toEqual(scriptToPost.content);
-        expect(response.body._id).toBeTruthy();
-        expect(response.body.date).toBeTruthy();
       });
   });
 });
