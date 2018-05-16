@@ -71,72 +71,51 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
   console.log('hit the PUT ROUTE');
   console.log('Request Content', request.body);
-  const keywords = request.body.content;
+  const keywords = request.body.keywordsArray;
   let areKeyWordsOrdered = false;
   const keyWordsInOrder = [];
   console.log('hit before while loop');
 
-  while (areKeyWordsOrdered !== true) { // order the keywords
+  let counter = 0;
+  while (areKeyWordsOrdered === false) { 
     let i = 0;
-    console.log(keywords[i]);
-    console.log(keywords[i].placement);
-    while (i !== keywords[i].placement) { i += 1; }
+
+
+    while (i !== keywords[counter].placement) { 
+      i += 1; 
+      if (i >= keywords.length) { areKeyWordsOrdered = true; }
+    }
+    
+    counter += 1;
     keyWordsInOrder.push(keywords[i].content);
-    if (i >= keywords.length) { areKeyWordsOrdered = true; }
+
+    if (counter >= keywords.length) { 
+      areKeyWordsOrdered = true; 
+    }
   }
 
   console.log('KeyWords in order', keyWordsInOrder);
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      console.log('Found Script', script);
+      console.log('Found Script');
       return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
     });
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-  const scriptChunkArray = [];
-  const scriptChunkRegEx = /.*?\[/;
-  const scriptChunkCleanerRegEx = /.*?\]/;
 
-  console.log(script);
+  console.log('script before reconstructed', script);
+  console.log('keywords', keywords);
+
+  let solution;
+  const findKeyword = /(\[.*?\])/;
   
-  while (scriptChunkRegEx.test(script.content)) { // push strings from script into array
-    scriptChunkArray.push(script.content.splice(0, scriptChunkRegEx.exec(script).index - 1));
-    script.content.splice(0, scriptChunkRegEx.exec(script).index);
+  for (let i = 0; i < keywords.length; i++) {
+    solution = script.content.replace(findKeyword, keywords[i]);
+    script.content = solution;
   }
-
-  for (let i = 0; i < scriptChunkArray.length; i++) {
-    if (scriptChunkCleanerRegEx.test(scriptChunkArray[i])) {
-      scriptChunkArray[i] = scriptChunkArray[i].splice(scriptChunkCleanerRegEx.exec(scriptChunkArray[i]).index - 1); /* eslint-disable-line */
-    }
-  }
-
-  // script is empty string
-  // script contents are in array
-  // keywords are blank spaces
-  // [him] and [her] went [here][there].
-  // ['', ' and ', ' went ', ' and ', '.']
-  // [him,her,here,there]
-  let chunkRepeat = true;
-  let keyRepeat = true;
-  let finishedScript = '';
-  let i = 0;
-  while (chunkRepeat === true || keyRepeat === true) {
-    chunkRepeat = false;
-    keyRepeat = false;
-    if (scriptChunkArray[i]) {
-      chunkRepeat = true;
-      finishedScript = `${finishedScript}${scriptChunkArray[i]}`;
-    }
-    if (keywords[i]) {
-      keyRepeat = true;
-      if (keywords[i].content) {
-        finishedScript = `${finishedScript}${script.keywords[i]}`;
-      }
-    }
-    i += 1;
-  }
-  return finishedScript;
+  console.log('reconstructed script', script);
+  return script.content;
 };
 
 export default scriptRouter;
