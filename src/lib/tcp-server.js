@@ -23,6 +23,7 @@ function Client(socket) {
   this.status = 'user';
   this.id = faker.random.uuid();
   this.pKeys = [];
+  this.words = [];
 } 
 
 const parseCommand = (message, user) => {
@@ -99,11 +100,16 @@ const parseCommand = (message, user) => {
                   i = -1;
                 }
               }
+              players.forEach((player) => {
+                for (let i = 0; i < player.pKeys.length; i++) {
+                  player.words.push(player.pKeys[i].content);
+                }
+              });
               console.log('players', players);
               players.forEach((player) => {
-                console.log('content for players', player.pKeys[0].keywordsArray);
+                console.log('words for players', player.words);
                 player.socket.write(`Here are your template words. \n Please write your replacements space separated and following an @submit command. \n
-                ---> A bunch of words `); // ${player.pKeys.keywordsArray.content}
+                ---> ${player.words} `);  
               });
             }
           })
