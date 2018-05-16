@@ -82,25 +82,28 @@ const parseCommand = (message, user) => {
               keys = res.body;
               console.log(keys);
 
-              console.log(players);
+              console.log('players', players);
 
+              let counter = 0;
               for (let i = 0; i < players.length; i++) {
-                let counter = 0;
-                players[i].pKeys.push(keys[i]);
+                // console.log('keys to be pushed', keys.keywordsArray[i].content);
+                players[i].pKeys.push(keys.keywordsArray[counter]);
+                console.log('keywords for each player', players[i].pKeys);
 
                 counter += 1;
-                if (counter === keys.length) {
-                  return null;
+                if (counter === keys.keywordsArray.length) {
+                  console.log('length of Keywords', keys.keywordsArray.length);
+                  i = Infinity;
                 }
                 if (i === players.length - 1) {
-                  i = 0;
+                  i = -1;
                 }
-                console.log(players[i].pKeys);
               }
-              
+              console.log('players', players);
               players.forEach((player) => {
+                console.log('content for players', player.pKeys[0].keywordsArray);
                 player.socket.write(`Here are your template words. \n Please write your replacements space separated and following an @submit command. \n
-                ---> ${player.pKeys.content}`);
+                ---> A bunch of words `); // ${player.pKeys.keywordsArray.content}
               });
             }
           })
