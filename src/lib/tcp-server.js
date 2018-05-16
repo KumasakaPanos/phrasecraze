@@ -83,16 +83,17 @@ const parseCommand = (message, user) => {
               console.log(keys);
               console.log(players);
 
+              let counter = 0;
+
               for (let i = 0; i < players.length; i++) {
-                let counter = 0;
-                players[i].pKeys.push(keys[i]);
+                players[i].pKeys.push(keys[counter]);
 
                 counter += 1;
                 if (counter === keys.length) {
-                  return null;
+                  break;
                 }
                 if (i === players.length - 1) {
-                  i = 0;
+                  i = -1;
                 }
                 console.log(players[i].pKeys);
               }
@@ -105,7 +106,7 @@ const parseCommand = (message, user) => {
           })
           .catch(error => new Error(error));
       }
-      user.socket.write('Only admits may write scripts-- @write rejected');
+      user.socket.write('Only admins may write scripts-- @write rejected');
       break;
     }
 
