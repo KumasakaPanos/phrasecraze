@@ -11,6 +11,11 @@ const bodyParser = require('body-parser');
 const keywordRouter = new Router();
 const jsonParser = new json();
 
-keywordRouter.post('/keywords', jsonParser, (request, response, next) => {
-
+keywordRouter.post('/keys', jsonParser, (request, response, next) => {
+  console.log(request.body.title);
+  return Script.findOne(request.body.title)
+    .then((script) => {
+      // panos Magic logic
+      return updatedScript;
+    });
 });
