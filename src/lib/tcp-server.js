@@ -81,7 +81,7 @@ const parseCommand = (message, user) => {
            
               keys = res.body;
               console.log(keys);
-
+              // keys[index][content]
               for (let i = 0; i < keys.length; i++) {
                 if (i >= players.length) {
                   players[i % players.length].pKeys.push(keys[i]);
