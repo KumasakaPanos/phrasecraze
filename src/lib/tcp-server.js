@@ -5,7 +5,7 @@ const logger = require('./logger');
 const faker = require('faker');
 const superagent = require('superagent');
 
-const path = `:${process.env.HTTP_PORT}`;
+const path = `http://localhost:${process.env.HTTP_PORT}`;
 
 let keys = [];
 const filledKeys = [];
@@ -19,9 +19,9 @@ const app = net.createServer();
 
 function Client(socket) {
   this.socket = socket;
-  this.name = `${faker.name.firstName()} + ${faker.name.lastName()}`;
+  this.name = `${faker.name.firstName()} ${faker.name.lastName()}`;
   this.status = 'user';
-  this.id = faker.random.uuid;
+  this.id = faker.random.uuid();
   this.pKeys = [];
 } 
 
@@ -36,7 +36,7 @@ const parseCommand = (message, user) => {
   const commandVarFinder = /\s.*$/;
   const commandVar = commandVarFinder.exec(message);
 
-  switch (command) {
+  switch (command[0]) {
     case '@admin': {
       const dupes = clients.filter(client => client.status === 'admin');
       if (dupes.length < 1) {
@@ -56,8 +56,9 @@ const parseCommand = (message, user) => {
 
     case '@title': {
       if (user.status === 'admin') {
-        if (commandVar) {
-          script.title = commandVar;
+        if (commandVar[0]) {
+          script.title = commandVar[0]; //eslint-disable-line
+          console.log(script);
         }
       } else user.socket.write('Only admins can set title-- @title rejected \n');
       break;
@@ -67,23 +68,33 @@ const parseCommand = (message, user) => {
       if (user.status === 'admin') {
         players = clients.filter(client => client.status !== 'admin');
 
-        if (commandVar) {
-          script.content = commandVar;
+        if (commandVar[0]) {
+          script.content = commandVar[0]; //eslint-disable-line
+          console.log(script);          
         }
-        
         user.socket.write('You have submitted a script \n');
-        superagent.post(`${path}/script`)
+        return superagent.post(`${path}/script`)
           .send(script)
           .then((res) => {
             if (res.status === 200) {
               user.socket.write('Script submitted successfully \n');
            
               keys = res.body;
+              console.log(keys);
+              console.log(players);
 
-              for (let i = 0; i < keys.length; i++) {
-                if (i >= players.length) {
-                  players[i % players.length].pKeys.push(keys[i]);
-                } else players[i].pKeys.push(keys[i]);
+              for (let i = 0; i < players.length; i++) {
+                let counter = 0;
+                players[i].pKeys.push(keys[i]);
+
+                counter += 1;
+                if (counter === keys.length) {
+                  return null;
+                }
+                if (i === players.length - 1) {
+                  i = 0;
+                }
+                console.log(players[i].pKeys);
               }
               
               players.forEach((player) => {
@@ -91,22 +102,24 @@ const parseCommand = (message, user) => {
                 ---> ${player.pKeys.content}`);
               });
             }
-          });
-      } else user.socket.write('Only admits may write scripts-- @write rejected');
+          })
+          .catch(error => new Error(error));
+      }
+      user.socket.write('Only admits may write scripts-- @write rejected');
       break;
     }
 
     case '@mywords': {
       players.forEach((player) => {
         if (player.id === user.id) {
-          user.socket.write('${player.pKeys.content');
+          user.socket.write(`${player.pKeys.content}`);
         }
       });
       break;
     }
 
     case '@submit': {
-      const parsedResponse = commandVar.split(' ');
+      const parsedResponse = commandVar[0].split(' ');
       const current = players.filter(player => player.id === user.id);
       if (current.pKeys.length === parsedResponse.length) {
         for (let i = 0; i < parsedResponse.length; i++) {
@@ -167,19 +180,19 @@ app.on('connection', (socket) => {
   const user = new Client(socket);
   
   clients.push(user);
-  socket.write('Welcome to the Phrase Craze server!\n');
-  socket.write(`Your name is ${user.name}\n`);
+  user.socket.write('Welcome to the Phrase Craze server!\n');
+  user.socket.write(`Your name is ${user.name}\n`);
   
   socket.on('data', (data) => {
     const message = data.toString().trim();
-    
+
     if (parseCommand(message, user)) {
       return;
     }
     
     clients.forEach((client) => {
       if (client.id !== user.id) {
-        client.socket.write(`${client.name}: ${message}\n`);
+        client.socket.write(`${user.name}: ${message}\n`);
       }
     }); 
   });

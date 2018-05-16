@@ -3,6 +3,10 @@
 import mongoose from 'mongoose';
 
 const scriptSchema = mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
   content: {
     type: String,
     required: true,
@@ -11,9 +15,11 @@ const scriptSchema = mongoose.Schema({
     type: Date,
     default: () => new Date(),
   },
-  keywords: {
-    type: String,
-  },
+  keywords: [
+    {
+      type: mongoose.Schema.Types.ObjectId, ref: 'keywords', 
+    },
+  ],
 });
 
-export default mongoose.model('script', scriptSchema);
+export default mongoose.model('scripts', scriptSchema);
