@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import { Router } from 'express';
 import HttpError from 'http-errors';
 import Script from '../model/script-model';
-import logger from '../lib/logger';
 
 const scriptRouter = new Router();
 const jsonParser = bodyParser.json();
@@ -37,37 +36,8 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
     .catch(next);
 });
 
-// scriptRouter.get('/script/:id', (request, response, next) => {
-//   console.log(request, 'this is the request in GET route');
-//   console.log(response, 'this is the response in the GET route');
-//   // logger.log(logger.INFO, 'GET - processing a request');
-//   return Script.findById(request.params.id)
-//     .then((script) => {
-//       if (!script) {
-//         logger.log(logger.INFO, 'GET - responding with a 404 status code - (!script)');
-//         return response.sendStatus(404);
-//       }
-//       logger.log(logger.INFO, 'GET - responding with a 200 status code');
-//       return response.json(script);
-//     })
-//     .catch(next);
-// });
-
-// Expected 
-
-// scriptRouter.post('/keys', jsonParser, (request, response, next) => {
-//   console.log(request.body.title);
-//   return Script.findOne(request.body.title)
-//     .then((script) => {
-//       // panos Magic logic
-//       return updatedScript;
-//     });
-// });
-
-// added
-
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
+  if (!request.body) return next(new HttpError(400, 'Bad content:  not received'));
   console.log('hit the PUT ROUTE');
   console.log('Request Content', request.body);
   const keywords = request.body.keywordsArray;
@@ -102,7 +72,6 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-
   console.log('script before reconstructed', script);
   console.log('keywords', keywords);
 

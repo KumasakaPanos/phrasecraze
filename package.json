@@ -7,6 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "jest --coverage --forceExit --runInBand --verbose",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
     "dboff": "killall mongod"
@@ -34,9 +35,11 @@
     "body-parser": "^1.18.2",
     "chalk": "^2.4.1",
     "dotenv": "^5.0.1",
+    "eslint-config-mongodb-js": "^3.0.1",
     "express": "^4.16.3",
     "faker": "^4.1.0",
     "http-errors": "^1.6.3",
+    "mongodb": "^3.1.0-beta4",
     "mongoose": "^5.0.16",
     "nodemon": "^1.17.4",
     "queue-fifo": "^0.2.4",
