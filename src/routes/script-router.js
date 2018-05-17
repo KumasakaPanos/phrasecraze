@@ -60,15 +60,12 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
 
 scriptRouter.get('/titles', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
-  console.log('inside title router');
   return Script.find({ }, { title: 1 })
     .then((titles) => {
-      console.log('after script find', titles);
       const titleReturn = [];
       titles.forEach((title) => {
         titleReturn.push(title.title);
       });
-      console.log('before return', titleReturn);
       return (titleReturn);
     })
     .then((list) => {
@@ -80,27 +77,20 @@ scriptRouter.get('/titles', jsonParser, (request, response, next) => {
 
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
-  console.log('hit the PUT ROUTE');
-  console.log('Request Content', request.body);
   const keywords = request.body.keywordsArray;
   const keyWordsInOrder = [];
-  console.log('hit before while loop');
 
   for (let i = 0; i < keywords.length; i++) {
     keyWordsInOrder[keywords[i].placement] = keywords[i].content;
   }
 
-  console.log('KeyWords in order', keyWordsInOrder);
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      console.log('Found Script');
       return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
     });
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-  console.log('script before reconstructed', script);
-  console.log('keywords', keywords);
   const scriptDummy = script;
 
   let solution;
@@ -110,7 +100,6 @@ scriptRouter.compileScript = (script, keywords) => {
     solution = scriptDummy.content.replace(findKeyword, keywords[i]);
     scriptDummy.content = solution;
   }
-  console.log('reconstructed script', scriptDummy);
   return scriptDummy.content;
 };
 
