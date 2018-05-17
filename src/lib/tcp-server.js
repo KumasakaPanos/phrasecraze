@@ -6,7 +6,7 @@ const faker = require('faker');
 const superagent = require('superagent');
 const chalk = require('chalk');
 
-const path = `http://localhost:${process.env.HTTP_PORT}`;
+const path = `http://localhost:${process.env.PORT}`;
 
 let keys = [];
 let filledKeys = [];
@@ -29,23 +29,17 @@ function Client(socket) {
   this.id = faker.random.uuid();
   this.pKeys = [];
   this.words = [];
+  this.submitted = false;
 } 
 
 const distributeKeys = (dKeys) => {
   keys = dKeys;
-  console.log(keys);
-
-  console.log('players', players);
 
   let counter = 0;
   for (let i = 0; i < players.length; i++) {
-    // console.log('keys to be pushed', keys.keywordsArray[i].content);
     players[i].pKeys.push(keys.keywordsArray[counter]);
-    console.log('keywords for each player', players[i].pKeys);
-
     counter += 1;
     if (counter === keys.keywordsArray.length) {
-      console.log('length of Keywords', keys.keywordsArray.length);
       i = Infinity;
     }
     if (i === players.length - 1) {
@@ -57,9 +51,8 @@ const distributeKeys = (dKeys) => {
       player.words.push(player.pKeys[i].content);
     }
   });
-  console.log('players', players);
+
   players.forEach((player) => {
-    console.log('words for players', player.words);
     player.socket.write(`Here are your template words. \n Please write your replacements space separated and following an @submit command. \n
     ---> ${player.words} `);  
   });
@@ -132,16 +125,23 @@ const parseCommand = (message, user) => {
 
     case '@title': {
       if (user.status === 'admin') {
-        if (commandVar[0]) {
-          script.title = commandVar[0]; //eslint-disable-line
-          console.log(script);
+        if (!commandVar) {
+          user.socket.write('no title provided \n');
+          break;
         }
+          script.title = commandVar[0]; //eslint-disable-line
+        user.socket.write('You have titled the script. \n');
+        console.log(script);
       } else user.socket.write('Only admins can set title-- @title rejected \n');
       break;
     }
 
     case '@pull': {
       if (user.status === 'admin') {
+        if (!commandVar) {
+          user.socket.write('no title provided \n');
+          break;
+        }
         players = clients.filter(client => client.status !== 'admin');
         if (commandVar[0]) {
           script.title = commandVar[0]; //eslint-disable-line
@@ -159,8 +159,29 @@ const parseCommand = (message, user) => {
       break;
     }
 
+    case '@titlelist': {
+      superagent.get(`${path}/titles`)
+        .then((res) => {
+          if (res.status === 200) {
+            let titleList = '';
+            console.log(res.body);
+            res.body.forEach((title) => {
+              if (titleList) {
+                titleList += `, ${title}`;
+              } else titleList += title;
+            });
+            user.socket.write(titleList);
+          }
+        });
+      break;
+    }
+
     case '@write': {
       if (user.status === 'admin') {
+        if (!commandVar) {
+          user.socket.write('no script provided \n');
+          break;
+        }
         if (script.title) {
           players = clients.filter(client => client.status !== 'admin');
 
@@ -206,20 +227,29 @@ const parseCommand = (message, user) => {
       break;
     }
 
+
     case '@submit': {
+      if (!commandVar) {
+        user.socket.write('no words provided \n');
+        break;
+      }
       const parsedResponse = commandVar[0].trim().split(' ');
       const current = players.filter(player => player.id === user.id);
-      console.log('current', current);
-      console.log('parsed response', parsedResponse);
-      if (current[0].words.length === parsedResponse.length) {
-        for (let i = 0; i < current[0].pKeys.length; i++) {          
-          current[0].pKeys[i].content = parsedResponse[i];
-          filledKeys.push(current[0].pKeys[i]);
-          console.log('filled keys array', filledKeys);
+      const admin = clients.filter(client => client.status === 'admin');
+
+      if (user.submitted === false) {
+        if (current[0].words.length === parsedResponse.length) {
+          for (let i = 0; i < current[0].pKeys.length; i++) {          
+            current[0].pKeys[i].content = parsedResponse[i];
+            filledKeys.push(current[0].pKeys[i]);
+          }
+          user.submitted = true;
+          user.socket.write('You have successfully submitted your words');
+          admin[0].socket.write(`${user.name} has submitted ${parsedResponse.length} words. ${filledKeys.length} out of ${keys.keywordsArray.length} words submitted by users.`);
+        } else {
+          user.socket.write('Number of words entered is incorrect. \n Use @mywords to see your words again. \n');
         }
-      } else {
-        user.socket.write('Number of words entered is incorrect. \n Use @mywords to see your words again. \n');
-      }
+      } else user.socket.write('You have already submitted words. \n');
       break;
     }
 
@@ -242,7 +272,7 @@ const parseCommand = (message, user) => {
                 client.socket.write(greenText(`
                 :'######:'########:'#######:'########:'##:::'##::'########'####'##::::'##'########'####:
                 '##... ##... ##..:'##.... ##:##.... ##. ##:'##:::... ##..:. ##::###::'###:##.....::####:
-                ##:::..:::: ##::::##:::: ##:##:::: ##:. ####::::::: ##:::: ##::####'####:##:::::::####:
+                 ##:::..:::: ##::::##:::: ##:##:::: ##:. ####::::::: ##:::: ##::####'####:##:::::::####:
                 . ######:::: ##::::##:::: ##:########:::. ##:::::::: ##:::: ##::## ### ##:######::: ##::
                 :..... ##::: ##::::##:::: ##:##.. ##::::: ##:::::::: ##:::: ##::##. #: ##:##...::::..:::
                 '##::: ##::: ##::::##:::: ##:##::. ##:::: ##:::::::: ##:::: ##::##:.:: ##:##::::::'####:
@@ -254,13 +284,14 @@ const parseCommand = (message, user) => {
                 client.pKeys = [];
                 client.words = [];
                 filledKeys = [];
+                client.submitted = false;
               });
             });
         } else { 
-          user.socket.write('keys not filled-- @submit rejected \n'); 
+          user.socket.write(`${filledKeys.length} out of ${keys.keywordsArray.length} words submitted.- @submitall rejected \n`); 
         }
       } else {
-        user.socket.write('only admins may submit all-- @submit rejected \n');
+        user.socket.write('only admins may submit all-- @submitall rejected \n');
       }
       break;
     }
