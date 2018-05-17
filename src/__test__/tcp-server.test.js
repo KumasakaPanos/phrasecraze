@@ -1,8 +1,8 @@
 'use strict';
 
 import faker from 'faker';
-import server from '../lib/tcp-server';
 import net from 'net';
+import server from '../lib/tcp-server';
 
 const PORT = process.env.TCP_PORT;
 jest.mock('../lib/tcp-server');
