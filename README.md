@@ -1,9 +1,9 @@
 # PhraseCraze: A Multiplyer TCP Experience!
 # Contents
-* [Intro](#Introduction)
+* [Introduction](#introduction)
 * [Getting Started](#getting-started)
 * [Commands](#commands)
-* [Authors](#Authors)
+* [Authors](#authors)
 * [Packages & Dependencies](#packages)
 ### Authors: 
 - Collin Meredith, 
