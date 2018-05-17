@@ -37,34 +37,27 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
     .catch(next);
 });
 
-// scriptRouter.get('/script/:id', (request, response, next) => {
-//   console.log(request, 'this is the request in GET route');
-//   console.log(response, 'this is the response in the GET route');
-//   // logger.log(logger.INFO, 'GET - processing a request');
-//   return Script.findById(request.params.id)
-//     .then((script) => {
-//       if (!script) {
-//         logger.log(logger.INFO, 'GET - responding with a 404 status code - (!script)');
-//         return response.sendStatus(404);
-//       }
-//       logger.log(logger.INFO, 'GET - responding with a 200 status code');
-//       return response.json(script);
-//     })
-//     .catch(next);
-// });
+scriptRouter.get('/script', jsonParser, (request, response, next) => {
+  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
+  return Script.findOne({ title: request.body.title })
+    .then((script) => {
+    // parsing the keywords out of the script
+      const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
+      // returns array
+      const solution = {};
+      solution.keywordsArray = [];
+      solution.title = script.title;
+      for (let i = 0; i < keywords.length; i++) {
+        solution.keywordsArray.push(new Word(keywords[i], i));
+      }
+      return solution;
+    })
+    .then((solution) => {
+      return response.json(solution);
+    })
 
-// Expected 
-
-// scriptRouter.post('/keys', jsonParser, (request, response, next) => {
-//   console.log(request.body.title);
-//   return Script.findOne(request.body.title)
-//     .then((script) => {
-//       // panos Magic logic
-//       return updatedScript;
-//     });
-// });
-
-// added
+    .catch(next);
+});
 
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
@@ -97,14 +90,27 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
 });
 
 scriptRouter.compileScript = (script, keywords) => {
+<<<<<<< HEAD
+=======
+
+  console.log('script before reconstructed', script);
+  console.log('keywords', keywords);
+  let scriptDummy = script;
+
+>>>>>>> 7d3bba545a511cafca3033ade861bcd82cf8f1bb
   let solution;
   const findKeyword = /(\[.*?\])/;
   
   for (let i = 0; i < keywords.length; i++) {
-    solution = script.content.replace(findKeyword, keywords[i]);
-    script.content = solution;
+    solution = scriptDummy.content.replace(findKeyword, keywords[i]);
+    scriptDummy.content = solution;
   }
+<<<<<<< HEAD
   return script.content;
+=======
+  console.log('reconstructed script', scriptDummy);
+  return scriptDummy.content;
+>>>>>>> 7d3bba545a511cafca3033ade861bcd82cf8f1bb
 };
 
 export default scriptRouter;
