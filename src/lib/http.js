@@ -2,7 +2,6 @@
 
 import express from 'express';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 import logger from './logger';
 import loggerMiddleware from './logger-middleware';
 import errorMiddleware from './error-middleware';
@@ -16,6 +15,7 @@ app.use(loggerMiddleware);
 app.use(scriptRouter);
 
 app.all('*', (request, response) => { 
+  logger.log(logger.INFO, 'Default route hit, returning 404');
   return response.sendStatus(404);  
 });
 
@@ -26,12 +26,13 @@ app.use(errorMiddleware);
 const startServer = () => {
   return mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
-      server = app.listen(process.env.HTTP_PORT, () => {
-        logger.log(logger.INFO, `Server is listening on PORT: ${process.env.HTTP_PORT}`);
+      server = app.listen(process.env.PORT, () => {
+        logger.log(logger.INFO, `Server is listening on PORT: ${process.env.PORT}`);
       });
       return undefined;
     })
     .catch((err) => {
+      logger.log(process.env.MONGODB_URI);
       logger.log(logger.ERROR, `Something happened, ${JSON.stringify(err)}`);
     });
 };
