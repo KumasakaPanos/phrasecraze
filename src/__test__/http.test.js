@@ -20,7 +20,7 @@ const removeScriptMock = () => Script.remove({});
 describe('/script', () => {
   beforeAll(startServer);
   afterAll(stopServer);
-  afterEach(() => Script.remove({}));
+  afterEach(removeScriptMock);
   test('POST - It should respond with a 200 status ', () => {
     const scriptToPost = {
       title: faker.lorem.words(2),
@@ -34,21 +34,29 @@ describe('/script', () => {
         expect(response.body.title).toEqual(scriptToPost.title);
       });
   });
+  test('POST - It should respond with 400 status for no content', () => {
+    return superagent.post(apiURL)
+      .send()
+      .then(Promise.reject)
+      .catch((error) => {
+        expect(error.status).toEqual(400);
+      });
+  });
 });
 
-// describe('/script/:id', () => {
-//   test('GET - it should respond with a 200 status and the content', () => {
-//     let tempScript = {};
-//     return createScriptMock()
-//       .then((script) => {
-//         tempScript = script;
-//         return superagent.get(`${apiURL}/${script/id}`)
-//           .then((response) => {
-//             console.log(response.body, 'inside the GET test');
-//             expect(response.status).toEqual(200);
-//             // expect(response.body._id).toEqual(tempScript._id.toString());
-//             // expect(response.body.content).toEqual(tempScript.body.content);
-//           });
-//       });
-//   });
-// });
+describe('/script/:id', () => {
+  test('GET - it should respond with a 200 status and the content', () => {
+    let tempScript = {};
+    return createScriptMock()
+      .then((script) => {
+        tempScript = script;
+        return superagent.get(`${apiURL}/${script/id}`)
+          .then((response) => {
+            console.log(response.body, 'inside the GET test');
+            expect(response.status).toEqual(200);
+            // expect(response.body._id).toEqual(tempScript._id.toString());
+            // expect(response.body.content).toEqual(tempScript.body.content);
+          });
+      });
+  });
+});

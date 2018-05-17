@@ -3,6 +3,7 @@
 import faker from 'faker';
 import server from '../lib/tcp-server';
 import net from 'net';
+
 const PORT = process.env.TCP_PORT;
 jest.mock('../lib/tcp-server');
 
@@ -27,13 +28,13 @@ describe('Test - TCP server should start and run on PORT 3000', () => {
 
 
 describe('Test - socket.write messages should return a string data type', () => {
-  let message = [];
+  const message = [];
   const client = net.connect({ port: 3000 });
-  client.on('data', data => {
+  client.on('data', (data) => {
     console.log(data.toString(), 'tcp data tester');
     message.push(data.toString());
     client.end(null, () => {
-      if(message.includes(data.toString())){
+      if (message.includes(data.toString())) {
         var testExpect = true;
       } else {
         testExpect = false;
@@ -46,12 +47,12 @@ describe('Test - socket.write messages should return a string data type', () => 
 
 describe('Test - socket.write functionality', () => {
   test('TCP socket.write should respond with a socket.name and a socket.user and the data should return a Welcome message,', () => {
-    let socket = net.connect(3000, 'localhost');
+    const socket = net.connect(3000, 'localhost');
     socket.user = 'phraseCraze';
     socket.name = 'Tim';
     socket.write('Welcome to the Phrase Craze server!\n');
     // socket.write(`Your name is ${user.name}\n`);
-    console.log(socket, 'this is the socket');
+    // console.log(socket, 'this is the socket');
     expect(socket.user).toMatch('phraseCraze');
     expect(socket.name).toMatch('Tim');
     expect(socket._pendingData).toMatch('Welcome to the Phrase Craze server!\n');
@@ -60,24 +61,24 @@ describe('Test - socket.write functionality', () => {
 
 describe('Test - @commands for the correct string output', () => {
   test('@admin command should return "You have been declared the admin"', () => {
-    let socket = net.connect(3000, 'localhost');
-    socket.on('data', data => {
+    const socket = net.connect(3000, 'localhost');
+    socket.on('data', (data) => {
       console.log('data on connection', data.toString());
     });
-    socket.write(`@admin`, () => {
-      socket.on('data', data => {
+    socket.write('@admin', () => {
+      socket.on('data', (data) => {
         console.log('DATA @admin ', data.toString());
         expect(data.toString()).toMatch('You have been declared the admin \n');
       });
     });
   });
   test('@notadmin command should return "You are no longer the admin \n"', () => {
-    let socket = net.connect(3000, 'localhost');
-    socket.on('data', data => {
+    const socket = net.connect(3000, 'localhost');
+    socket.on('data', (data) => {
       console.log('data on connection', data.toString());
     });
-    socket.write(`@notadmin`, () => {
-      socket.on('data', data => {
+    socket.write('@notadmin', () => {
+      socket.on('data', (data) => {
         console.log('DATA @admin ', data.toString());
         expect(data.toString()).toMatch('You are no longer the admin \n');
       });
@@ -106,11 +107,9 @@ describe('Test - switch statement commands', () => {
         } else user.socket.write('An admin has already been declared-- @admin rejected \n');
         break;
       }
-      if (user.status = 'admin') {
-        expect(user.socket.write).toEqual('You have been declared the admin \n');
-      }
-
+        if (user.status = 'admin') {
+          expect(user.socket.write).toEqual('You have been declared the admin \n');
+        }
     }
-  }
-
+  };
 });

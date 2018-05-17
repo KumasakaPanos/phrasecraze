@@ -17,7 +17,7 @@ const Word = class {
 };
 
 scriptRouter.post('/script', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
+  if (!request.body.title) return next(new HttpError(400, 'Bad Content: Title Required'));
   return new Script(request.body).save()
     .then((script) => {
       // parsing the keywords out of the script
@@ -62,38 +62,42 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
   const keywords = request.body.keywordsArray;
-  let areKeyWordsOrdered = false;
-  const keyWordsInOrder = [];
+  
+  keywords.sort((a, b) => {
+    return a.order - b.order;
+  });
+  // let areKeyWordsOrdered = false;
+  // const keyWordsInOrder = [];
 
-  let counter = 0;
-  while (areKeyWordsOrdered === false) { 
-    let i = 0;
+  // let counter = 0;
+  // while (areKeyWordsOrdered === false) { 
+  //   let i = 0;
 
 
-    while (i !== keywords[counter].placement) { 
-      i += 1; 
-      if (i >= keywords.length) { areKeyWordsOrdered = true; }
-    }
+  //   while (i !== keywords[counter].placement) { 
+  //     i += 1; 
+  //     if (i >= keywords.length) { areKeyWordsOrdered = true; }
+  //   }
     
-    counter += 1;
-    keyWordsInOrder.push(keywords[i].content);
+  //   counter += 1;
+  //   keyWordsInOrder.push(keywords[i].content);
 
-    if (counter >= keywords.length) { 
-      areKeyWordsOrdered = true; 
-    }
-  }
+  //   if (counter >= keywords.length) { 
+  //     areKeyWordsOrdered = true; 
+  //   }
+  // }
 
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
+      // return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
+      return response.json(scriptRouter.compileScript(script, keywords));  
     });
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-
   console.log('script before reconstructed', script);
   console.log('keywords', keywords);
-  let scriptDummy = script;
+  const scriptDummy = script;
 
   let solution;
   const findKeyword = /(\[.*?\])/;
