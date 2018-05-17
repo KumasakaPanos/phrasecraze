@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import { Router } from 'express';
 import HttpError from 'http-errors';
 import Script from '../model/script-model';
-import logger from '../lib/logger';
+
 
 const scriptRouter = new Router();
 const jsonParser = bodyParser.json();
@@ -23,9 +23,12 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
       // parsing the keywords out of the script
       const keywords = script.content.match(/\[(.*?)\]/g)
         .map(keyword => keyword.substring(1, keyword.length - 1));
+<<<<<<< HEAD
       // returns array
+=======
+>>>>>>> f084a50f1b552123f5f76cb465ba85842a489743
       const solution = {};
-      solution.keywordsArray = new Array();
+      solution.keywordsArray = [];
       solution.title = script.title;
       for (let i = 0; i < keywords.length; i++) {
         solution.keywordsArray.push(new Word(keywords[i], i));
@@ -61,14 +64,32 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
     .catch(next);
 });
 
+
+scriptRouter.get('/titles', jsonParser, (request, response, next) => {
+  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
+  console.log('inside title router');
+  return Script.find({ }, { title: 1 })
+    .then((titles) => {
+      console.log('after script find', titles);
+      const titleReturn = [];
+      titles.forEach((title) => {
+        titleReturn.push(title.title);
+      });
+      console.log('before return', titleReturn);
+      return (titleReturn);
+    })
+    .then((list) => {
+      return response.json(list);
+    })
+    .catch(next);
+});
+
+
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
-  console.log('hit the PUT ROUTE');
-  console.log('Request Content', request.body);
   const keywords = request.body.keywordsArray;
   let areKeyWordsOrdered = false;
   const keyWordsInOrder = [];
-  console.log('hit before while loop');
 
   let counter = 0;
   while (areKeyWordsOrdered === false) { 
@@ -88,19 +109,16 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
     }
   }
 
-  console.log('KeyWords in order', keyWordsInOrder);
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      console.log('Found Script');
       return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
     });
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-
   console.log('script before reconstructed', script);
   console.log('keywords', keywords);
-  let scriptDummy = script;
+  const scriptDummy = script;
 
   let solution;
   const findKeyword = /(\[.*?\])/;
