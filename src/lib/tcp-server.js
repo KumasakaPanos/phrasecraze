@@ -239,7 +239,7 @@ const parseCommand = (message, user) => {
                 user.socket.write('Final script pulled successfully \n');
               }
               clients.forEach((client) => {
-                  client.socket.write(greenText(`
+                client.socket.write(greenText(`
                 :'######:'########:'#######:'########:'##:::'##::'########'####'##::::'##'########'####:
                 '##... ##... ##..:'##.... ##:##.... ##. ##:'##:::... ##..:. ##::###::'###:##.....::####:
                 ##:::..:::: ##::::##:::: ##:##:::: ##:. ####::::::: ##:::: ##::####'####:##:::::::####:
