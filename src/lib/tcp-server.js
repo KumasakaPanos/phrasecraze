@@ -6,7 +6,7 @@ const faker = require('faker');
 const superagent = require('superagent');
 const chalk = require('chalk');
 
-const path = `http://localhost:${process.env.HTTP_PORT}`;
+const path = `http://localhost:${process.env.PORT}`;
 
 let keys = [];
 const filledKeys = [];
