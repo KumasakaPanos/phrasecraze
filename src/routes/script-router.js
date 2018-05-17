@@ -66,30 +66,9 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   keywords.sort((a, b) => {
     return a.order - b.order;
   });
-  // let areKeyWordsOrdered = false;
-  // const keyWordsInOrder = [];
-
-  // let counter = 0;
-  // while (areKeyWordsOrdered === false) { 
-  //   let i = 0;
-
-
-  //   while (i !== keywords[counter].placement) { 
-  //     i += 1; 
-  //     if (i >= keywords.length) { areKeyWordsOrdered = true; }
-  //   }
-    
-  //   counter += 1;
-  //   keyWordsInOrder.push(keywords[i].content);
-
-  //   if (counter >= keywords.length) { 
-  //     areKeyWordsOrdered = true; 
-  //   }
-  // }
 
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      // return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
       return response.json(scriptRouter.compileScript(script, keywords));  
     });
 });
