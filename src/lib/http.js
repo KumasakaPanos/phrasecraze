@@ -16,6 +16,7 @@ app.use(loggerMiddleware);
 app.use(scriptRouter);
 
 app.all('*', (request, response) => { 
+  logger.log(logger.INFO, 'Default route hit, returning 404')
   return response.sendStatus(404);  
 });
 
