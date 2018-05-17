@@ -1,35 +1,46 @@
 'use strict';
 
-// const faker = ('faker');
+import net from 'net';
 import server from '../lib/tcp-server';
 
-const net = ('net');
-const PORT = process.env.TCP_PORT;
+let PORT = process.env.TCP_PORT;
 // jest.mock('../lib/tcp-server');
 
 beforeAll(server.start);
 afterAll(server.stop);
 
-describe('Test - TCP server should start and run on PORT 3000', () => {
-  test('TCP server should listen on PORT 3000', () => {
+describe('Test - TCP server should start and run on PORT 5000', () => {
+  test('TCP server should listen on PORT 5000', () => {
     expect(PORT).toEqual('5000');
   });
 });
 
+describe('Test - TCP server error on wrong or missing PORT', () => {
+  test('Test - TCP server should produce an error "missing TCP PORT" if the port is wrong or missing', () => {
+    server.stop();
+    PORT = null;
+    server.start();
+    console.log(server, 'this is the server');
+    expect(error).toEqual('missing TCP PORT');
+  });
+});
+
 describe('Test - socket.write messages should return a string data type', () => {
-  const message = [];
-  const client = net.connect({ port: 5000 });
-  client.on('data', (data) => {
-    console.log(data.toString(), 'tcp data tester');
-    message.push(data.toString());
-    client.end(null, () => {
-      let testExpect = false;
-      if (message.includes(data.toString())) {
-        testExpect = true;
-      } else {
-        testExpect = false;
-      }
-      expect(testExpect).toBe(true);
+  test('TEST = socket.write returns a string', () => {
+    const message = [];
+    const client = net.connect({ port: 5000 });
+    client.on('data', (data) => {
+    // console.log(data.toString(), 'tcp data tester');
+      message.push(data.toString());
+      client.end(null, () => {
+        let testExpect = false;
+        if (message.includes(data.toString())) {
+          testExpect = true;
+        } else {
+          testExpect = false;
+        }
+        expect(testExpect).toBe(true);
+      });
     });
   });
 });
@@ -41,7 +52,7 @@ describe('Test - socket.write functionality', () => {
     socket.name = 'Tim';
     socket.write('Welcome to the Phrase Craze server!\n');
     // socket.write(`Your name is ${user.name}\n`);
-    console.log(socket, 'this is the socket');
+    // console.log(socket, 'this is the socket');
     expect(socket.user).toMatch('phraseCraze');
     expect(socket.name).toMatch('Tim');
     expect(socket._pendingData).toMatch('Welcome to the Phrase Craze server!\n');
@@ -108,9 +119,8 @@ describe('Test - switch statement commands', () => {
           user.status = 'admin';
           user.socket.write('You have been declared the admin \n');
         } else user.socket.write('An admin has already been declared-- @admin rejected \n');
-        break;
       }
-        if (user.status = 'admin') {
+        if (user.status === 'admin') {
           expect(user.socket.write).toEqual('You have been declared the admin \n');
         }
         if (user.status !== 'admin') {
@@ -139,6 +149,17 @@ describe('Test - switch statement commands', () => {
       |  |  | .'|     | -_|  |    -| | | | -_|_ -|
       |_____|__,|_|_|_|___|  |__|__|___|_|___|___|
     \n`));
+        }
+        if (mockCommand[0] === '@commands') {
+          expect(user.socket.write).toEqual(greenText(`                             
+       _____                             _    __    _     _   
+      |     |___ _____ _____ _____ ___ _| |  |  |  |_|___| |_ 
+      |   --| . |     |     |  -  |   | . |  |  |__| |_ -|  _|
+      |_____|___|_|_|_|_|_|_|__|__|_|_|___|  |_____|_|___|_|   
+      \n`));
+        }
+        if (command[0] === '@notadmin') {
+          expect(user.status).toEqual('user');
         }
     }
   };
