@@ -107,8 +107,10 @@ const parseCommand = (message, user) => {
       @rules - Displays the rules of PhraseCraze.
       @admin - If typed, makes the player who entered the command the admin of the game (assuming there is not already an admin).
       @write [script goes here] - Begin writing a script (assuming you are the admin). Press Enter key to submit your script.
+      @pull [title] Submits a script from the databse, specified by the title provided.
       @notadmin - Removes admin status (assuming you are the admin).
       @title - Set the title of the script (assuming you are the admin).
+      @titlelist - Displays a list of script titles from the database.
       @mywords - Displays your keywords. 
       @submit - Submits your keywrds (assuming you are not the admin).
       @submitall - Reconstructs the script with player generated keywords (assuming you are the admin).
