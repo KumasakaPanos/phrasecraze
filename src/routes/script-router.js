@@ -98,7 +98,6 @@ scriptRouter.compileScript = (script, keywords) => {
     solution = scriptDummy.content.replace(findKeyword, keywords[i]);
     scriptDummy.content = solution;
   }
-  console.log('reconstructed script', scriptDummy);
   return scriptDummy.content;
 };
 
