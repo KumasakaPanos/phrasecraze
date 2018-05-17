@@ -5,7 +5,6 @@ import { Router } from 'express';
 import HttpError from 'http-errors';
 import Script from '../model/script-model';
 
-
 const scriptRouter = new Router();
 const jsonParser = bodyParser.json();
 
@@ -23,10 +22,6 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
       // parsing the keywords out of the script
       const keywords = script.content.match(/\[(.*?)\]/g)
         .map(keyword => keyword.substring(1, keyword.length - 1));
-<<<<<<< HEAD
-      // returns array
-=======
->>>>>>> f084a50f1b552123f5f76cb465ba85842a489743
       const solution = {};
       solution.keywordsArray = [];
       solution.title = script.title;
@@ -45,10 +40,8 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-    // parsing the keywords out of the script
       const keywords = script.content.match(/\[(.*?)\]/g)
         .map(keyword => keyword.substring(1, keyword.length - 1));
-      // returns array
       const solution = {};
       solution.keywordsArray = [];
       solution.title = script.title;
@@ -88,25 +81,10 @@ scriptRouter.get('/titles', jsonParser, (request, response, next) => {
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
   const keywords = request.body.keywordsArray;
-  let areKeyWordsOrdered = false;
   const keyWordsInOrder = [];
 
-  let counter = 0;
-  while (areKeyWordsOrdered === false) { 
-    let i = 0;
-
-
-    while (i !== keywords[counter].placement) { 
-      i += 1; 
-      if (i >= keywords.length) { areKeyWordsOrdered = true; }
-    }
-    
-    counter += 1;
-    keyWordsInOrder.push(keywords[i].content);
-
-    if (counter >= keywords.length) { 
-      areKeyWordsOrdered = true; 
-    }
+  for (let i = 0; i < keywords.length; i++) {
+    keyWordsInOrder[keywords[i].placement] = keywords[i].content;
   }
 
   return Script.findOne({ title: request.body.title })

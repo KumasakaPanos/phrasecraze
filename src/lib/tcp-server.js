@@ -6,7 +6,7 @@ const faker = require('faker');
 const superagent = require('superagent');
 const chalk = require('chalk');
 
-const path = `http://localhost:${process.env.PORT}`;
+const path = `http://localhost:${process.env.HTTP_PORT}`;
 
 let keys = [];
 let filledKeys = [];
@@ -297,6 +297,8 @@ const parseCommand = (message, user) => {
                 filledKeys = [];
                 client.submitted = false;
               });
+              script.title = '';
+              script.content = '';
             });
         } else { 
           user.socket.write(`${filledKeys.length} out of ${keys.keywordsArray.length} words submitted.- @submitall rejected \n`); 
