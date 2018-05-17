@@ -37,57 +37,53 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
     .catch(next);
 });
 
-// scriptRouter.get('/script/:id', (request, response, next) => {
-//   console.log(request, 'this is the request in GET route');
-//   console.log(response, 'this is the response in the GET route');
-//   // logger.log(logger.INFO, 'GET - processing a request');
-//   return Script.findById(request.params.id)
-//     .then((script) => {
-//       if (!script) {
-//         logger.log(logger.INFO, 'GET - responding with a 404 status code - (!script)');
-//         return response.sendStatus(404);
-//       }
-//       logger.log(logger.INFO, 'GET - responding with a 200 status code');
-//       return response.json(script);
-//     })
-//     .catch(next);
-// });
+scriptRouter.get('/script', jsonParser, (request, response, next) => {
+  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
+  return Script.findOne({ title: request.body.title })
+    .then((script) => {
+    // parsing the keywords out of the script
+      const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
+      // returns array
+      const solution = {};
+      solution.keywordsArray = [];
+      solution.title = script.title;
+      for (let i = 0; i < keywords.length; i++) {
+        solution.keywordsArray.push(new Word(keywords[i], i));
+      }
+      return solution;
+    })
+    .then((solution) => {
+      return response.json(solution);
+    })
+    .catch(next);
+});
 
-// Expected 
-
-// scriptRouter.post('/keys', jsonParser, (request, response, next) => {
-//   console.log(request.body.title);
-//   return Script.findOne(request.body.title)
-//     .then((script) => {
-//       // panos Magic logic
-//       return updatedScript;
-//     });
-// });
-
-// added
+scriptRouter.get('/titles', jsonParser, (request, response, next) => {
+  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
+  console.log('inside title router');
+  return Script.find({ }, { title: 1 })
+    .then((titles) => {
+      console.log('after script find', titles);
+      const titleReturn = [];
+      titles.forEach((title) => {
+        titleReturn.push(title.title);
+      });
+      console.log('before return', titleReturn);
+      return (titleReturn);
+    })
+    .then((list) => {
+      return response.json(list);
+    })
+    .catch(next);
+});
 
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
   const keywords = request.body.keywordsArray;
-  let areKeyWordsOrdered = false;
   const keyWordsInOrder = [];
 
-  let counter = 0;
-  while (areKeyWordsOrdered === false) { 
-    let i = 0;
-
-
-    while (i !== keywords[counter].placement) { 
-      i += 1; 
-      if (i >= keywords.length) { areKeyWordsOrdered = true; }
-    }
-    
-    counter += 1;
-    keyWordsInOrder.push(keywords[i].content);
-
-    if (counter >= keywords.length) { 
-      areKeyWordsOrdered = true; 
-    }
+  for (let i = 0; i < keywords.length; i += 1) {
+    keyWordsInOrder[keywords[i].placement] = keywords[i];
   }
 
   return Script.findOne({ title: request.body.title })
