@@ -48,7 +48,7 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
       solution.keywordsArray = [];
       solution.title = script.title;
       for (let i = 0; i < keywords.length; i++) {
-        solution.keywordsArray.push(new Word(keywords[i], i));
+        solution.keywordsArray.push(new Word(keywords[i].placement, i));
       }
       return solution;
     })
@@ -83,7 +83,7 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   const keyWordsInOrder = [];
 
   for (let i = 0; i < keywords.length; i += 1) {
-    keyWordsInOrder[keywords[i].placement] = keywords[i];
+    keyWordsInOrder[keywords[i].placement] = keywords[i].content;
   }
 
   return Script.findOne({ title: request.body.title })
