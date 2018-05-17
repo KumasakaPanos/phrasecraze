@@ -90,14 +90,11 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-<<<<<<< HEAD
-=======
 
   console.log('script before reconstructed', script);
   console.log('keywords', keywords);
   let scriptDummy = script;
 
->>>>>>> 7d3bba545a511cafca3033ade861bcd82cf8f1bb
   let solution;
   const findKeyword = /(\[.*?\])/;
   
@@ -105,12 +102,8 @@ scriptRouter.compileScript = (script, keywords) => {
     solution = scriptDummy.content.replace(findKeyword, keywords[i]);
     scriptDummy.content = solution;
   }
-<<<<<<< HEAD
-  return script.content;
-=======
   console.log('reconstructed script', scriptDummy);
   return scriptDummy.content;
->>>>>>> 7d3bba545a511cafca3033ade861bcd82cf8f1bb
 };
 
 export default scriptRouter;
