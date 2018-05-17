@@ -1,6 +1,6 @@
 # PhraseCraze: A Multiplyer TCP Experience!
 # Contents
-* [Intro](#Introduction:)
+* [Intro](#Introduction)
 * [Getting Started](#getting-started)
 * [Commands](#commands)
 * [Authors](#Authors)
