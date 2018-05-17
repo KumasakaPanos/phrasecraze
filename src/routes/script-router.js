@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import { Router } from 'express';
 import HttpError from 'http-errors';
 import Script from '../model/script-model';
-import logger from '../lib/logger';
+
 
 const scriptRouter = new Router();
 const jsonParser = bodyParser.json();
@@ -24,7 +24,7 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
       const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
       // returns array
       const solution = {};
-      solution.keywordsArray = new Array();
+      solution.keywordsArray = [];
       solution.title = script.title;
       for (let i = 0; i < keywords.length; i++) {
         solution.keywordsArray.push(new Word(keywords[i], i));
@@ -68,12 +68,9 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
 
 scriptRouter.put('/keys', jsonParser, (request, response, next) => {
   if (!request.body) return next(new HttpError(400, 'Bad content:  not recieved'));
-  console.log('hit the PUT ROUTE');
-  console.log('Request Content', request.body);
   const keywords = request.body.keywordsArray;
   let areKeyWordsOrdered = false;
   const keyWordsInOrder = [];
-  console.log('hit before while loop');
 
   let counter = 0;
   while (areKeyWordsOrdered === false) { 
@@ -93,19 +90,13 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
     }
   }
 
-  console.log('KeyWords in order', keyWordsInOrder);
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      console.log('Found Script');
       return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
     });
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-
-  console.log('script before reconstructed', script);
-  console.log('keywords', keywords);
-
   let solution;
   const findKeyword = /(\[.*?\])/;
   
@@ -113,7 +104,6 @@ scriptRouter.compileScript = (script, keywords) => {
     solution = script.content.replace(findKeyword, keywords[i]);
     script.content = solution;
   }
-  console.log('reconstructed script', script);
   return script.content;
 };
 

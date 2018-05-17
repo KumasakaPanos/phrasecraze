@@ -2,7 +2,6 @@
 
 import express from 'express';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 import logger from './logger';
 import loggerMiddleware from './logger-middleware';
 import errorMiddleware from './error-middleware';
@@ -16,7 +15,7 @@ app.use(loggerMiddleware);
 app.use(scriptRouter);
 
 app.all('*', (request, response) => { 
-  logger.log(logger.INFO, 'Default route hit, returning 404')
+  logger.log(logger.INFO, 'Default route hit, returning 404');
   return response.sendStatus(404);  
 });
 
@@ -33,6 +32,7 @@ const startServer = () => {
       return undefined;
     })
     .catch((err) => {
+      logger.log(process.env.MONGODB_URI);
       logger.log(logger.ERROR, `Something happened, ${JSON.stringify(err)}`);
     });
 };

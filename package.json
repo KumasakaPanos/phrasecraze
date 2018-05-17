@@ -9,6 +9,7 @@
   "scripts": {
     "test": "jest --coverage --forceExit --runInBand --verbose",
     "dbon": "mkdir -p ./db && mongod --dbpath ./db",
+    "windbon":"mkdir db && mongod --dbpath db",
     "dboff": "killall mongod"
   },
   "jest": {
