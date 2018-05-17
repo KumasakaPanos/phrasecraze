@@ -259,6 +259,7 @@ const parseCommand = (message, user) => {
                 \n`));
                 client.socket.write(grayText(`
                 ________________________________________________________________________________________
+                \n
                 ${finScript}
                   `));
                 client.pKeys = [];
