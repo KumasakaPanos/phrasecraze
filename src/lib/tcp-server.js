@@ -15,10 +15,12 @@ let finScript = '';
 
 let clients = [];
 let players = [];
-const greenText = chalk.keyword('green');
-const yellowText = chalk.keyword('yellow');
-const redText = chalk.keyword('red');
+const greenText = chalk.keyword('teal');
+const redText = chalk.keyword('crimson');
+const magentaText = chalk.keyword('magenta');
 const grayText = chalk.keyword('gray');
+const limeText = chalk.keyword('lime');
+const goldText = chalk.keyword('gold');
 
 const app = net.createServer();
 
@@ -86,11 +88,11 @@ const parseCommand = (message, user) => {
       break;
     }
     case '@rules': {
-      user.socket.write(yellowText(`
-       _____                  _____     _         
-      |   __|___ _____ ___   | __  |_ _| |___ ___ 
-      |  |  | .'|     | -_|  |    -| | | | -_|_ -|
-      |_____|__,|_|_|_|___|  |__|__|___|_|___|___|                                          
+      user.socket.write(limeText(`
+       _____                    _____     _         
+      |   __|_____ _____ ___   | __  |_ _| |___ ___ 
+      |  |  |  -  |     | -_|  |    -| | | | -_|_ -|
+      |_____|__|__|_|_|_|___|  |__|__|___|_|___|___|                                          
     \n`));
       user.socket.write(grayText(`
        _________________________________________________________________________________________________________________________________________________________________________________
@@ -106,7 +108,7 @@ const parseCommand = (message, user) => {
       break;
     }
     case '@commands': {
-      user.socket.write(greenText(`                             
+      user.socket.write(goldText(`                             
        _____                             _    __    _     _   
       |     |___ _____ _____ _____ ___ _| |  |  |  |_|___| |_ 
       |   --| . |     |     |  -  |   | . |  |  |__| |_ -|  _|
@@ -174,19 +176,19 @@ const parseCommand = (message, user) => {
           script.content = commandVar[0]; //eslint-disable-line
             console.log(script);          
           }
-          user.socket.write(yellowText(`
-                                                                         __ 
-        _____         _     _      _____     _         _ _   _         _|  |
-       |   __|___ ___|_|___| |_   |   __|_ _| |_ _____|_| |_| |_ ___ _| |  |
-       |__   |  _|  _| | . |  _|  |__   | | | . |     | |  _|  _| -_| . |__|
-       |_____|___|_| |_|  _|_|    |_____|___|___|_|_|_|_|_| |_| |___|___|__|
+          user.socket.write(magentaText(`
+                                                                          
+        _____         _     _      _____     _         _ _   _         _
+       |   __|___ ___|_|___| |_   |   __|_ _| |_ _____|_| |_| |_ ___ _| |
+       |__   |  _|  _| | . |  _|  |__   | | | . |     | |  _|  _| -_| . |__ __ __
+       |_____|___|_| |_|  _|_|    |_____|___|___|_|_|_|_|_| |_| |___|___|__|__|__|
         
         \n`));
           return superagent.post(`${path}/script`)
             .send(script)
             .then((res) => {
               if (res.status === 200) {
-                user.socket.write(yellowText(`
+                user.socket.write(magentaText(`
                                             __ 
               _____                        |  |
              |   __|_ _ ___ ___ ___ ___ ___|  |
@@ -256,6 +258,7 @@ const parseCommand = (message, user) => {
                 :......:::::..:::::.......::..:::::..::::..:::::::::..::::....:..:::::..:........:....::
                 \n`));
                 client.socket.write(grayText(`
+                ________________________________________________________________________________________
                 ${finScript}
                   `));
                 client.pKeys = [];
@@ -292,7 +295,7 @@ app.on('connection', (socket) => {
   const user = new Client(socket);
   
   clients.push(user);
-  user.socket.write('Welcome to the Phrase Craze server!\n');
+  user.socket.write('Connected!\n');
   user.socket.write(`Your name is ${user.name}\n`);
   user.socket.write(greenText(` 
   :::::::::::::::::::::'##:::::'##:'########:'##::::::::'######:::'#######::'##::::'##:'########:::::::::::::::::::::
@@ -303,7 +306,7 @@ app.on('connection', (socket) => {
   ::::::::::::::::::::::##: ##: ##: ##::::::: ##::::::: ##::: ##: ##:::: ##: ##:.:: ##: ##:::::::::::::::::::::::::::
   :::::::::::::::::::::::###. ###:: ########: ########:. ######::. #######:: ##:::: ##: ########:::::::::::::::::::::
   ::::::::::::::::::::::...::...:::........::........:::......::::.......:::..:::::..::........::::::::::::::::::::::\n`));
-  user.socket.write(yellowText(` 
+  user.socket.write(magentaText(` 
   :::::::::::::::::::::::::::::::::::::::::::'########::'#######:::::::::::::::::::::::::::::::::::::::::::::::::::::
   :::::::::::::::::::::::::::::::::::::::::::... ##..::'##.... ##::::::::::::::::::::::::::::::::::::::::::::::::::::
   :::::::::::::::::::::::::::::::::::::::::::::: ##:::: ##:::: ##::::::::::::::::::::::::::::::::::::::::::::::::::::
