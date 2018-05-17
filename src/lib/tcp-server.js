@@ -9,7 +9,7 @@ const chalk = require('chalk');
 const path = `http://localhost:${process.env.HTTP_PORT}`;
 
 let keys = [];
-const filledKeys = [];
+let filledKeys = [];
 const script = {};
 let finScript = '';
 
@@ -30,6 +30,40 @@ function Client(socket) {
   this.pKeys = [];
   this.words = [];
 } 
+
+const distributeKeys = (dKeys) => {
+  keys = dKeys;
+  console.log(keys);
+
+  console.log('players', players);
+
+  let counter = 0;
+  for (let i = 0; i < players.length; i++) {
+    // console.log('keys to be pushed', keys.keywordsArray[i].content);
+    players[i].pKeys.push(keys.keywordsArray[counter]);
+    console.log('keywords for each player', players[i].pKeys);
+
+    counter += 1;
+    if (counter === keys.keywordsArray.length) {
+      console.log('length of Keywords', keys.keywordsArray.length);
+      i = Infinity;
+    }
+    if (i === players.length - 1) {
+      i = -1;
+    }
+  }
+  players.forEach((player) => {
+    for (let i = 0; i < player.pKeys.length; i++) {
+      player.words.push(player.pKeys[i].content);
+    }
+  });
+  console.log('players', players);
+  players.forEach((player) => {
+    console.log('words for players', player.words);
+    player.socket.write(`Here are your template words. \n Please write your replacements space separated and following an @submit command. \n
+    ---> ${player.words} `);  
+  });
+};
 
 const parseCommand = (message, user) => {
   if (!message.startsWith('@')) {
@@ -77,9 +111,9 @@ const parseCommand = (message, user) => {
       \n`));
       user.socket.write(grayText(`
       @commands - Displays a list of game commands. 
-      @rules - Displays the rules of PhaseCraze.
+      @rules - Displays the rules of PhraseCraze.
       @admin - If typed, makes the player who entered the command the admin of the game (assuming there is not already an admin).
-      @write script goes [here] - Begin writing a script (assuming you are the admin). Press Enter key to submit your script.
+      @write [script goes here] - Begin writing a script (assuming you are the admin). Press Enter key to submit your script.
       @notadmin - Removes admin status (assuming you are the admin).
       @title - Set the title of the script (assuming you are the admin).
       @mywords - Displays your keywords. 
@@ -106,15 +140,35 @@ const parseCommand = (message, user) => {
       break;
     }
 
-    case '@write': {
+    case '@pull': {
       if (user.status === 'admin') {
         players = clients.filter(client => client.status !== 'admin');
-
         if (commandVar[0]) {
-          script.content = commandVar[0]; //eslint-disable-line
+          script.title = commandVar[0]; //eslint-disable-line
           console.log(script);          
         }
-        user.socket.write(yellowText(`
+        return superagent.get(`${path}/script`)
+          .send(script)
+          .then((res) => {
+            if (res.status === 200) {
+              user.socket.write('got script');
+              distributeKeys(res.body);
+            }
+          });
+      }  
+      break;
+    }
+
+    case '@write': {
+      if (user.status === 'admin') {
+        if (script.title) {
+          players = clients.filter(client => client.status !== 'admin');
+
+          if (commandVar[0]) {
+          script.content = commandVar[0]; //eslint-disable-line
+            console.log(script);          
+          }
+          user.socket.write(yellowText(`
                                                                          __ 
         _____         _     _      _____     _         _ _   _         _|  |
        |   __|___ ___|_|___| |_   |   __|_ _| |_ _____|_| |_| |_ ___ _| |  |
@@ -122,11 +176,11 @@ const parseCommand = (message, user) => {
        |_____|___|_| |_|  _|_|    |_____|___|___|_|_|_|_|_| |_| |___|___|__|
         
         \n`));
-        return superagent.post(`${path}/script`)
-          .send(script)
-          .then((res) => {
-            if (res.status === 200) {
-              user.socket.write(yellowText(`
+          return superagent.post(`${path}/script`)
+            .send(script)
+            .then((res) => {
+              if (res.status === 200) {
+                user.socket.write(yellowText(`
                                             __ 
               _____                        |  |
              |   __|_ _ ___ ___ ___ ___ ___|  |
@@ -134,42 +188,12 @@ const parseCommand = (message, user) => {
              |_____|___|___|___|___|___|___|__|
               \n`));
            
-              keys = res.body;
-              console.log(keys);
-
-              console.log('players', players);
-
-              let counter = 0;
-              for (let i = 0; i < players.length; i++) {
-                // console.log('keys to be pushed', keys.keywordsArray[i].content);
-                players[i].pKeys.push(keys.keywordsArray[counter]);
-                console.log('keywords for each player', players[i].pKeys);
-
-                counter += 1;
-                if (counter === keys.keywordsArray.length) {
-                  console.log('length of Keywords', keys.keywordsArray.length);
-                  i = Infinity;
-                }
-                if (i === players.length - 1) {
-                  i = -1;
-                }
+                distributeKeys(res.body);
               }
-              players.forEach((player) => {
-                for (let i = 0; i < player.pKeys.length; i++) {
-                  player.words.push(player.pKeys[i].content);
-                }
-              });
-              console.log('players', players);
-              players.forEach((player) => {
-                console.log('words for players', player.words);
-                player.socket.write(`Here are your template words. \n Please write your replacements space separated and following an @submit command. \n
-                ---> ${player.words} `);  
-              });
-            }
-          })
-          .catch(error => new Error(error));
-      }
-      user.socket.write('Only admins may write scripts-- @write rejected');
+            })
+            .catch(error => new Error(error));
+        } user.socket.write('Script must be titled (use @title)-- @write rejected'); 
+      } else user.socket.write('Only admins may write scripts-- @write rejected');
       break;
     }
 
@@ -199,7 +223,7 @@ const parseCommand = (message, user) => {
       break;
     }
 
-    case '@submitAll': {
+    case '@submitall': {
       if (user.status === 'admin') {
         console.log('Before override keys', keys);
         if (filledKeys.length === keys.keywordsArray.length) {
@@ -215,7 +239,21 @@ const parseCommand = (message, user) => {
                 user.socket.write('Final script pulled successfully \n');
               }
               clients.forEach((client) => {
-                client.socket.write(finScript);
+                  client.socket.write(greenText(`
+                :'######:'########:'#######:'########:'##:::'##::'########'####'##::::'##'########'####:
+                '##... ##... ##..:'##.... ##:##.... ##. ##:'##:::... ##..:. ##::###::'###:##.....::####:
+                ##:::..:::: ##::::##:::: ##:##:::: ##:. ####::::::: ##:::: ##::####'####:##:::::::####:
+                . ######:::: ##::::##:::: ##:########:::. ##:::::::: ##:::: ##::## ### ##:######::: ##::
+                :..... ##::: ##::::##:::: ##:##.. ##::::: ##:::::::: ##:::: ##::##. #: ##:##...::::..:::
+                '##::: ##::: ##::::##:::: ##:##::. ##:::: ##:::::::: ##:::: ##::##:.:: ##:##::::::'####:
+                . ######:::: ##:::. #######::##:::. ##::: ##:::::::: ##:::'####:##:::: ##:########:####:
+                :......:::::..:::::.......::..:::::..::::..:::::::::..::::....:..:::::..:........:....::
+                \n
+                ${finScript}  
+                  `));
+                client.pKeys = [];
+                client.words = [];
+                filledKeys = [];
               });
             });
         } else { 
@@ -239,6 +277,9 @@ const removeClient = user => () => {
   players = players.filter(player => player.id !== user.id);
   clients.forEach(client => client.socket.write(`${user.name} has left the room.`));
 };
+
+// ----------------SERVER CODE-----------------------------
+
 
 app.on('connection', (socket) => {
   const user = new Client(socket);
