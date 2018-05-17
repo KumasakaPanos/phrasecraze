@@ -16,6 +16,9 @@
       "<rootDir>/src/__test__/lib/test.env.js"
     ]
   },
+  "engines":{
+    "node":"8.10.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

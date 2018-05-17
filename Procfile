@@ -1,1 +1,1 @@
-web: ./index.js
+web: npm dbon&node ./index.js
