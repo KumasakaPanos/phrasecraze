@@ -6,6 +6,7 @@ export default (error, request, response, next) => { // eslint-disable-line no-u
   logger.log(logger.ERROR, '__ERROR_MIDDLEWARE__');
   logger.log(logger.ERROR, error);
 
+  console.log(error);
   if (error.status) {
     logger.log(logger.INFO, `ERROR MIDDLEWARE: Responding with a ${error.status} code and message ${error.message}`);
     return response.sendStatus(error.status);

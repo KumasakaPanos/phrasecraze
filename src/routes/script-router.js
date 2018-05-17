@@ -21,7 +21,8 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
   return new Script(request.body).save()
     .then((script) => {
       // parsing the keywords out of the script
-      const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
+      const keywords = script.content.match(/\[(.*?)\]/g)
+        .map(keyword => keyword.substring(1, keyword.length - 1));
       // returns array
       const solution = {};
       solution.keywordsArray = new Array();
@@ -42,7 +43,8 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
   return Script.findOne({ title: request.body.title })
     .then((script) => {
     // parsing the keywords out of the script
-      const keywords = script.content.match((/(?<=\[)(.*?)(?=\])/g));
+      const keywords = script.content.match(/\[(.*?)\]/g)
+        .map(keyword => keyword.substring(1, keyword.length - 1));
       // returns array
       const solution = {};
       solution.keywordsArray = [];

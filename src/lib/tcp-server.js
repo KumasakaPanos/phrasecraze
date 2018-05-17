@@ -93,12 +93,15 @@ const parseCommand = (message, user) => {
       |_____|__,|_|_|_|___|  |__|__|___|_|___|___|                                          
     \n`));
       user.socket.write(grayText(`
-      "PhraseCraze" is a derivative of the popular word game "Mad-Libs"! 
-      The admin will write a story with certain words surrounded in brackets []. 
-      The words that are surrounded by brackets are known as "keywords" and these keywords are sent to players, the players then put their own keywords in place of the generic words. 
-      For example: If the admin writes "[Male_Name] and his pet [Animal] went for a walk!",
-      two keywords are sent out and players insert their own words to match the description of the word in the brackets.
-      The script is then reconstructed with player generated words and shown back to all players: "Gerald and his pet koala went for a walk!"
+       _________________________________________________________________________________________________________________________________________________________________________________
+      |                                                                                                                                                                                 |
+      | "PhraseCraze" is a derivative of the popular word game "Mad-Libs"!                                                                                                              |
+      | The admin will write a story with certain words surrounded in brackets [].                                                                                                      |
+      | The words that are surrounded by brackets are known as "keywords" and these keywords are sent to players, the players then put their own keywords in place of the generic words.| 
+      | For example: If the admin writes "[Male_Name] and his pet [Animal] went for a walk!",                                                                                           |
+      | two keywords are sent out and players insert their own words to match the description of the word in the brackets.                                                              |
+      | The script is then reconstructed with player generated words and shown back to all players: "Gerald and his pet koala went for a walk!"                                         |
+      |_________________________________________________________________________________________________________________________________________________________________________________|
     \n`));
       break;
     }
@@ -110,15 +113,18 @@ const parseCommand = (message, user) => {
       |_____|___|_|_|_|_|_|_|__|__|_|_|___|  |_____|_|___|_|   
       \n`));
       user.socket.write(grayText(`
-      @commands - Displays a list of game commands. 
-      @rules - Displays the rules of PhraseCraze.
-      @admin - If typed, makes the player who entered the command the admin of the game (assuming there is not already an admin).
-      @write [script goes here] - Begin writing a script (assuming you are the admin). Press Enter key to submit your script.
-      @notadmin - Removes admin status (assuming you are the admin).
-      @title - Set the title of the script (assuming you are the admin).
-      @mywords - Displays your keywords. 
-      @submit - Submits your keywrds (assuming you are not the admin).
-      @submitall - Reconstructs the script with player generated keywords (assuming you are the admin).
+       ______________________________________________________________________________________________________________________________
+      |                                                                                                                              |
+      | @commands - Displays a list of game commands.                                                                                | 
+      | @rules - Displays the rules of PhraseCraze.                                                                                  |
+      | @admin - If typed, makes the player who entered the command the admin of the game (assuming there is not already an admin).  |  
+      | @write [script goes here] - Begin writing a script (assuming you are the admin). Press Enter key to submit your script.      |
+      | @notadmin - Removes admin status (assuming you are the admin).                                                               |
+      | @title - Set the title of the script (assuming you are the admin).                                                           |
+      | @mywords - Displays your keywords.                                                                                           |
+      | @submit - Submits your keywrds (assuming you are not the admin).                                                             |
+      | @submitall - Reconstructs the script with player generated keywords (assuming you are the admin).                            |
+      |______________________________________________________________________________________________________________________________|
     \n`));
       break;
     }
@@ -242,14 +248,15 @@ const parseCommand = (message, user) => {
                 client.socket.write(greenText(`
                 :'######:'########:'#######:'########:'##:::'##::'########'####'##::::'##'########'####:
                 '##... ##... ##..:'##.... ##:##.... ##. ##:'##:::... ##..:. ##::###::'###:##.....::####:
-                ##:::..:::: ##::::##:::: ##:##:::: ##:. ####::::::: ##:::: ##::####'####:##:::::::####:
+                 ##:::..:::: ##::::##:::: ##:##:::: ##:. ####::::::: ##:::: ##::####'####:##:::::::####:
                 . ######:::: ##::::##:::: ##:########:::. ##:::::::: ##:::: ##::## ### ##:######::: ##::
                 :..... ##::: ##::::##:::: ##:##.. ##::::: ##:::::::: ##:::: ##::##. #: ##:##...::::..:::
                 '##::: ##::: ##::::##:::: ##:##::. ##:::: ##:::::::: ##:::: ##::##:.:: ##:##::::::'####:
                 . ######:::: ##:::. #######::##:::. ##::: ##:::::::: ##:::'####:##:::: ##:########:####:
                 :......:::::..:::::.......::..:::::..::::..:::::::::..::::....:..:::::..:........:....::
-                \n
-                ${finScript}  
+                \n`));
+                client.socket.write(grayText(`
+                ${finScript}
                   `));
                 client.pKeys = [];
                 client.words = [];
@@ -288,23 +295,23 @@ app.on('connection', (socket) => {
   user.socket.write('Welcome to the Phrase Craze server!\n');
   user.socket.write(`Your name is ${user.name}\n`);
   user.socket.write(greenText(` 
- '##:::::'##:'########:'##::::::::'######:::'#######::'##::::'##:'########:
-  ##:'##: ##: ##.....:: ##:::::::'##... ##:'##.... ##: ###::'###: ##.....::
-  ##: ##: ##: ##::::::: ##::::::: ##:::..:: ##:::: ##: ####'####: ##:::::::
-  ##: ##: ##: ######::: ##::::::: ##::::::: ##:::: ##: ## ### ##: ######:::
-  ##: ##: ##: ##...:::: ##::::::: ##::::::: ##:::: ##: ##. #: ##: ##...::::
-  ##: ##: ##: ##::::::: ##::::::: ##::: ##: ##:::: ##: ##:.:: ##: ##:::::::
- . ###. ###:: ########: ########:. ######::. #######:: ##:::: ##: ########:
- :...::...:::........::........:::......::::.......:::..:::::..::........::\n`));
+  :::::::::::::::::::::'##:::::'##:'########:'##::::::::'######:::'#######::'##::::'##:'########:::::::::::::::::::::
+  ::::::::::::::::::::::##:'##: ##: ##.....:: ##:::::::'##... ##:'##.... ##: ###::'###: ##.....::::::::::::::::::::::
+  ::::::::::::::::::::::##: ##: ##: ##::::::: ##::::::: ##:::..:: ##:::: ##: ####'####: ##:::::::::::::::::::::::::::
+  ::::::::::::::::::::::##: ##: ##: ######::: ##::::::: ##::::::: ##:::: ##: ## ### ##: ######:::::::::::::::::::::::
+  ::::::::::::::::::::::##: ##: ##: ##...:::: ##::::::: ##::::::: ##:::: ##: ##. #: ##: ##...::::::::::::::::::::::::
+  ::::::::::::::::::::::##: ##: ##: ##::::::: ##::::::: ##::: ##: ##:::: ##: ##:.:: ##: ##:::::::::::::::::::::::::::
+  :::::::::::::::::::::::###. ###:: ########: ########:. ######::. #######:: ##:::: ##: ########:::::::::::::::::::::
+  ::::::::::::::::::::::...::...:::........::........:::......::::.......:::..:::::..::........::::::::::::::::::::::\n`));
   user.socket.write(yellowText(` 
- '########::'#######::
- ... ##..::'##.... ##:
- ::: ##:::: ##:::: ##:
- ::: ##:::: ##:::: ##:
- ::: ##:::: ##:::: ##:
- ::: ##:::: ##:::: ##:
- ::: ##::::. #######::
- :::..::::::.......:::\n`));
+  :::::::::::::::::::::::::::::::::::::::::::'########::'#######:::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::::::::::... ##..::'##.... ##::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::::::::::::: ##:::: ##:::: ##::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::::::::::::: ##:::: ##:::: ##::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::::::::::::: ##:::: ##:::: ##::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::::::::::::: ##:::: ##:::: ##::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::::::::::::: ##::::. #######:::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::::::::::::::..::::::.......:::::::::::::::::::::::::::::::::::::::::::::::::::::\n`));
   user.socket.write(redText(` 
  '########::'##::::'##:'########:::::'###:::::'######::'########::'######::'########:::::'###::::'########:'########:
   ##.... ##: ##:::: ##: ##.... ##:::'## ##:::'##... ##: ##.....::'##... ##: ##.... ##:::'## ##:::..... ##:: ##.....::
@@ -315,7 +322,11 @@ app.on('connection', (socket) => {
   ##:::::::: ##:::: ##: ##:::. ##: ##:::: ##:. ######:: ########:. ######:: ##:::. ##: ##:::: ##: ########: ########:
  ..:::::::::..:::::..::..:::::..::..:::::..:::......:::........:::......:::..:::::..::..:::::..::........::........::\n`));
   user.socket.write(grayText(`
-  The best TCP word game around! For rules, type "@rules". For a list of commands, type "@commands".
+   ___________________________________________________________________________________________________
+  |                                                                                                   |
+  | The best TCP word game around! For rules, type "@rules". For a list of commands, type "@commands" |
+  | To chat with other players, just simply type your message and hit Enter.                          |
+  |___________________________________________________________________________________________________|
   \n`));
   socket.on('data', (data) => {
     const message = data.toString().trim();
