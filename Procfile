@@ -1,1 +1,1 @@
-web: index.js
+web: ./index.js
