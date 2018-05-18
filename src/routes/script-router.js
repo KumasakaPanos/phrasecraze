@@ -16,7 +16,7 @@ const Word = class {
 };
 
 scriptRouter.post('/script', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
+  if (!request.body.title) return next(new HttpError(400, 'Bad Content: Title Required'));
   return new Script(request.body).save()
     .then((script) => {
       // parsing the keywords out of the script
@@ -37,7 +37,6 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
 });
 
 scriptRouter.get('/script', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
   return Script.findOne({ title: request.body.title })
     .then((script) => {
       const keywords = script.content.match(/\[(.*?)\]/g)
@@ -59,16 +58,12 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
 
 
 scriptRouter.get('/titles', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
-  console.log('inside title router');
   return Script.find({ }, { title: 1 })
     .then((titles) => {
-      console.log('after script find', titles);
       const titleReturn = [];
       titles.forEach((title) => {
         titleReturn.push(title.title);
       });
-      console.log('before return', titleReturn);
       return (titleReturn);
     })
     .then((list) => {
@@ -89,13 +84,11 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
 
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
+      return response.json(scriptRouter.compileScript(script, keywords));  
     });
 });
 
 scriptRouter.compileScript = (script, keywords) => {
-  console.log('script before reconstructed', script);
-  console.log('keywords', keywords);
   const scriptDummy = script;
 
   let solution;
@@ -105,7 +98,6 @@ scriptRouter.compileScript = (script, keywords) => {
     solution = scriptDummy.content.replace(findKeyword, keywords[i]);
     scriptDummy.content = solution;
   }
-  console.log('reconstructed script', scriptDummy);
   return scriptDummy.content;
 };
 
