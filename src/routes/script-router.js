@@ -83,7 +83,7 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
 
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      return response.json(scriptRouter.compileScript(script, keywords));  
+      return response.json(scriptRouter.compileScript(script, keyWordsInOrder));  
     });
 });
 

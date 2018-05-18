@@ -35,6 +35,7 @@ function Client(socket) {
 } 
 
 const distributeKeys = (dKeys) => {
+  filledKeys = [];
   keys = dKeys;
 
   let counter = 0;
