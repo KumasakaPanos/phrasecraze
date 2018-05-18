@@ -19,7 +19,6 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
   if (!request.body.title) return next(new HttpError(400, 'Bad Content: Title Required'));
   return new Script(request.body).save()
     .then((script) => {
-      // parsing the keywords out of the script
       const keywords = script.content.match(/\[(.*?)\]/g)
         .map(keyword => keyword.substring(1, keyword.length - 1));
       const solution = {};
