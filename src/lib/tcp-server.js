@@ -297,6 +297,7 @@ const parseCommand = (message, user) => {
               });
               script.title = '';
               script.content = '';
+              user.status = 'user';
             });
         } else { 
           user.socket.write(`${filledKeys.length} out of ${keys.keywordsArray.length} words submitted.- @submitall rejected \n`); 
