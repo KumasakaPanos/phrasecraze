@@ -16,7 +16,7 @@ const Word = class {
 };
 
 scriptRouter.post('/script', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
+  if (!request.body.title) return next(new HttpError(400, 'Bad Content: Title Required'));
   return new Script(request.body).save()
     .then((script) => {
       // parsing the keywords out of the script
@@ -37,7 +37,6 @@ scriptRouter.post('/script', jsonParser, (request, response, next) => {
 });
 
 scriptRouter.get('/script', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
   return Script.findOne({ title: request.body.title })
     .then((script) => {
       const keywords = script.content.match(/\[(.*?)\]/g)
@@ -59,7 +58,6 @@ scriptRouter.get('/script', jsonParser, (request, response, next) => {
 
 
 scriptRouter.get('/titles', jsonParser, (request, response, next) => {
-  if (!request.body) return next(new HttpError(400, 'Bad Content: Title Required'));
   return Script.find({ }, { title: 1 })
     .then((titles) => {
       const titleReturn = [];
@@ -86,7 +84,7 @@ scriptRouter.put('/keys', jsonParser, (request, response, next) => {
 
   return Script.findOne({ title: request.body.title })
     .then((script) => {
-      return response.json(scriptRouter.compileScript(script, keyWordsInOrder)); 
+      return response.json(scriptRouter.compileScript(script, keywords));  
     });
 });
 
