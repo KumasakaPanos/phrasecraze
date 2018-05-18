@@ -5,7 +5,7 @@ import superagent from 'superagent';
 import Script from '../model/script-model';
 import { startServer, stopServer } from '../lib/http';
 
-const apiURL = `http://localhost:${process.env.PORT}`;
+const apiURL = `http://localhost:${process.env.HTTP_PORT}`;
 
 const createScriptMock = () => {
   return new Script({
