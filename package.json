@@ -9,7 +9,7 @@
   "scripts": {
     "test": "jest --coverage --forceExit --runInBand --verbose",
     "dbon": "mkdir -p ./db && mongod -v --dbpath ./db",
-    "windbon":"mkdir db && mongod --dbpath db",
+    "windbon": "mkdir db && mongod --dbpath db",
     "dboff": "killall mongod"
   },
   "jest": {
@@ -17,8 +17,8 @@
       "<rootDir>/src/__test__/lib/test.env.js"
     ]
   },
-  "engines":{
-    "node":"8.10.0"
+  "engines": {
+    "node": "8.10.0"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +32,7 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jest": "^21.15.1",
     "jest": "^22.4.3",
+    "mock-socket": "^7.1.0",
     "superagent": "^3.8.3"
   },
   "dependencies": {

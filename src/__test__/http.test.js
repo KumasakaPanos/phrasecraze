@@ -14,9 +14,21 @@ const createScriptMock = () => {
   }).save();
 };
 
-jest.setTimeout(10000);
-
 const removeScriptMock = () => Script.remove({});
+
+describe('/invalid route', () => {
+  beforeAll(startServer);
+  afterAll(stopServer);
+  afterEach(removeScriptMock);
+  test('GET - It should respond with 404 status for no content', () => {
+    const invalidId = '';
+    return superagent.get(`${apiURL}/${invalidId}`)
+      .then(Promise.reject)
+      .catch((error) => {
+        expect(error.status).toEqual(404);
+      });
+  });
+});
 
 describe('/script route', () => {
   beforeAll(startServer);
@@ -57,6 +69,7 @@ describe('/script route', () => {
       });
   });
 });
+
 describe('/titles route', () => {
   beforeAll(startServer);
   afterAll(stopServer);
@@ -71,6 +84,7 @@ describe('/titles route', () => {
       });
   });
 });
+
 describe('/keywords route', () => {
   beforeAll(startServer);
   afterAll(stopServer);
@@ -86,3 +100,4 @@ describe('/keywords route', () => {
       });
   });
 });
+
