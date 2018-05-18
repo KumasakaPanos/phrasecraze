@@ -10,7 +10,6 @@ afterAll(server.stop);
 describe('valid requests', () => {
   test('should listen on 3000', () => {
     expect(PORT).toEqual('3000');
-    require('jest');
   });
 
   test('Should Connect and send Gretting message', (done) => {
