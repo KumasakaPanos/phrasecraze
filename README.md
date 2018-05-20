@@ -66,7 +66,9 @@ Playing a game with your friends is easy!
 4. ```@notadmin``` - Removes admin status (assuming you are the admin).
 5. ```@title``` - Creates a title for the script you are about to write, (assuming you are the admin). This example sets up a script named 'There and Back Again'
 
-        ```@title There And Back Again``` 
+        
+        @title There And Back Again
+         
 
 6. ```@write``` - Writes a custom script. This creates text inside the script with the brackets inside being the keywords the players will replace. 
 
@@ -74,12 +76,25 @@ Playing a game with your friends is easy!
 
 7. ```@submit``` - Submits your words (assuming you are a player and not an admin). Submissions must be separated by spaces.
 
-        ```@submit dog wet New_York```
+        
+        @submit dog wet New_York
+        
 
 8. ```@submitall``` - Initiates the reconstruction of the script with player generated words in place of generic keywords (assuming you are the admin).
 9. ```@mywords``` - Displays your keywords (assuming you are a player and not the admin).
-10. ```@pull There And Back Again``` - Pulls a certian script from the database and distributes its keywords to the players.
+10. ```@pull There And Back Again``` - Pulls a certain script from the database and distributes its keywords to the players.
 11. ```@titlelist``` - Displays a list of all scripts in the database by title.
+
+#Project Architecture
+
+###Game Logic Diagram:
+
+![](src/Assets/Phrase_Craze_Game_Logic.jpeg)
+
+###MVC Architecture Overview:
+
+![](src/Assets/PhraseCraze_Architecture.jpeg)
+
 ## Packages
 ```npm i``` to download all required packages!
 - [Chalk](https://www.npmjs.com/package/chalk) - Pretty colors in terminal.
