@@ -85,13 +85,18 @@ Playing a game with your friends is easy!
 10. ```@pull There And Back Again``` - Pulls a certain script from the database and distributes its keywords to the players.
 11. ```@titlelist``` - Displays a list of all scripts in the database by title.
 
-#Project Architecture
+#Project Architecture:
 
-###Game Logic Diagram:
+
+##Game Logic Diagram:
+
+
 
 ![](src/Assets/Phrase_Craze_Game_Logic.jpeg)
 
-###MVC Architecture Overview:
+##MVC Architecture Overview:
+
+
 
 ![](src/Assets/PhraseCraze_Architecture.jpeg)
 
